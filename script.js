@@ -299,7 +299,7 @@ btnLogin.addEventListener('click', async () => {
             renderDashboard(globalData);
         } else {
             msg.classList.add('error');
-            msg.textContent = 'Password salah!';
+            msg.textContent = result.message || 'Login gagal';
         }
     } catch(err) {
         btnLogin.disabled = false;
