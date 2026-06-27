@@ -225,7 +225,7 @@ function renderTable(data) {
               <option value="Proses Cetak" ${item.statusProses==='Proses Cetak'?'selected':''}>Proses Cetak</option>
               <option value="Selesai" ${item.statusProses==='Selesai'?'selected':''}>Selesai</option>
           </select>`;
-          if (item.jenisPdh === 'Exclusive') {
+          if (item.jenisPdh.includes('Exclusive')) {
               validasiCell = `<select class="admin-select" onchange="updateStatus(${item.rowId}, 'validasi', this.value)">
                   <option value="Menunggu" ${item.validasi==='Menunggu'?'selected':''}>Menunggu</option>
                   <option value="Lulus" ${item.validasi==='Lulus'?'selected':''}>Lulus</option>
@@ -240,7 +240,7 @@ function renderTable(data) {
           bayarCell = `<span class="badge ${badgeBayar}">${item.statusBayar.toUpperCase()}</span>`;
           prosesCell = `<span class="badge ${badgeProses}">${item.statusProses.toUpperCase()}</span>`;
           
-          if (item.jenisPdh === 'Exclusive' && item.validasi) {
+          if (item.jenisPdh.includes('Exclusive') && item.validasi) {
               let badgeVal = item.validasi.toLowerCase() === 'lulus' ? 'success' : (item.validasi.toLowerCase() === 'ditolak' ? 'danger' : (item.validasi.toLowerCase() === 'menunggu' ? 'warning' : 'primary'));
               validasiCell = `<span class="badge ${badgeVal}">${item.validasi.toUpperCase()}</span>`;
           } else {
@@ -272,19 +272,27 @@ function renderDashboard(data) {
     let dist = { S: {std:0, exc:0}, M: {std:0, exc:0}, L: {std:0, exc:0}, XL: {std:0, exc:0}, XXL: {std:0, exc:0} };
 
     data.forEach(item => {
-        let vol = parseInt(item.volume) || 1;
-        if(item.statusBayar.toLowerCase().includes('lunas')) lunas += vol;
-        else if(item.statusBayar.toLowerCase().includes('dp')) dp += vol;
-        else pending += vol;
+        let vols = String(item.volume).split(',').map(s => parseInt(s.trim()) || 1);
+        let ukurans = String(item.ukuran).split(',').map(s => s.trim().toUpperCase());
+        let jenisPdhs = String(item.jenisPdh).split(',').map(s => s.trim().toLowerCase());
 
-        if(item.statusProses.toLowerCase().includes('selesai')) selesai += vol;
-        else if(item.statusProses.toLowerCase().includes('proses')) proses += vol;
+        let totalVol = vols.reduce((a, b) => a + b, 0);
+
+        if(item.statusBayar.toLowerCase().includes('lunas')) lunas += totalVol;
+        else if(item.statusBayar.toLowerCase().includes('dp')) dp += totalVol;
+        else pending += totalVol;
+
+        if(item.statusProses.toLowerCase().includes('selesai')) selesai += totalVol;
+        else if(item.statusProses.toLowerCase().includes('proses')) proses += totalVol;
         
-        let uk = item.ukuran.toUpperCase();
-        if(uk === '2XL') uk = 'XXL'; // Just in case old data has 2XL
-        let typePdh = item.jenisPdh.toLowerCase().includes('standard') ? 'std' : 'exc';
-        if(dist[uk]) {
-            dist[uk][typePdh] += vol;
+        for (let i = 0; i < ukurans.length; i++) {
+            let uk = ukurans[i];
+            if(uk === '2XL') uk = 'XXL';
+            let typePdh = (jenisPdhs[i] || '').includes('standard') ? 'std' : 'exc';
+            let vol = vols[i] || 1;
+            if(dist[uk]) {
+                dist[uk][typePdh] += vol;
+            }
         }
     });
 

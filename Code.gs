@@ -128,27 +128,31 @@ function doPost(e) {
     }
 
     const submitDate = new Date();
-    data.items.forEach(item => {
-      let currentStatusValidasi = (item.jenisPdh === 'Exclusive') ? (statusValidasi || 'Menunggu') : '';
-      let currentKaryaUrl = (item.jenisPdh === 'Exclusive') ? karyaUrl : '';
+    
+    let allUkuran = data.items.map(item => item.ukuran).join(', ');
+    let allJenisPdh = data.items.map(item => item.jenisPdh).join(', ');
+    let allVolume = data.items.map(item => item.volume).join(', ');
+    
+    let hasExclusive = data.items.some(item => item.jenisPdh === 'Exclusive');
+    let finalStatusValidasi = hasExclusive ? (statusValidasi || 'Menunggu') : '';
+    let finalKaryaUrl = hasExclusive ? karyaUrl : '';
 
-      const rowData = [
-        data.nama,
-        item.ukuran,
-        data.divisi,
-        item.jenisPdh,
-        currentKaryaUrl,
-        currentStatusValidasi,
-        item.volume,
-        fileUrl,
-        'Pending', 
-        'Proses',  
-        "'" + data.noWa, 
-        submitDate
-      ];
-      
-      sheet.appendRow(rowData);
-    });
+    const rowData = [
+      data.nama,
+      allUkuran,
+      data.divisi,
+      allJenisPdh,
+      finalKaryaUrl,
+      finalStatusValidasi,
+      allVolume,
+      fileUrl,
+      'Pending', 
+      'Proses',  
+      "'" + data.noWa, 
+      submitDate
+    ];
+    
+    sheet.appendRow(rowData);
     
     return ContentService.createTextOutput(JSON.stringify({ success: true, message: 'Pesanan berhasil dikirim!' }))
       .setMimeType(ContentService.MimeType.JSON);
