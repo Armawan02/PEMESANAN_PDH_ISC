@@ -191,6 +191,7 @@ function startCountdown() {
     clearInterval(countdownInterval);
     const banner = document.getElementById('countdown-banner');
     const formContainer = document.getElementById('form-container-wrapper');
+    const headerBadge = document.getElementById('header-status-badge');
 
     countdownInterval = setInterval(() => {
         let isCurrentlyOpen = false;
@@ -219,6 +220,13 @@ function startCountdown() {
         }
 
         if (!isCurrentlyOpen) {
+            if (headerBadge) {
+                headerBadge.style.background = 'rgba(239, 68, 68, 0.2)';
+                headerBadge.style.color = '#ef4444';
+                headerBadge.style.border = '1px solid rgba(239, 68, 68, 0.4)';
+                headerBadge.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg> <span>STATUS: DITUTUP</span>`;
+            }
+            
             banner.style.display = 'block';
             banner.style.background = 'rgba(239, 68, 68, 0.1)';
             banner.style.color = '#ef4444';
@@ -231,6 +239,13 @@ function startCountdown() {
                 banner.innerHTML = `Pemesanan saat ini sedang <strong>DITUTUP</strong>`;
             }
         } else {
+            if (headerBadge) {
+                headerBadge.style.background = 'rgba(16, 185, 129, 0.2)';
+                headerBadge.style.color = '#10b981';
+                headerBadge.style.border = '1px solid rgba(16, 185, 129, 0.4)';
+                headerBadge.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg> <span>STATUS: DIBUKA</span>`;
+            }
+            
             formContainer.style.display = 'block';
             if (countdownType === 'tutup') {
                 banner.style.display = 'block';
