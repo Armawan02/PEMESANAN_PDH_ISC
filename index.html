@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pemesanan PDH ISC</title>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="background-glow"></div>
+  <div class="container">
+    
+    <header class="header">
+      <div class="logo">
+        <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#4da6ff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+      </div>
+      <div class="subtitle">INFORMATICS STUDY CLUB</div>
+      <h1>PEMESANAN PDH ISC</h1>
+      <div class="status-badge">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+        <span>STATUS: DIBUKA</span>
+      </div>
+    </header>
+
+    <div class="grid-container">
+      <div class="card glass">
+        <h3 class="card-title"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#4da6ff" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg> Spesifikasi & Harga</h3>
+        <ul class="specs-list">
+          <li><span class="check">✓</span> Bahan: <strong>American Drill</strong></li>
+          <li><span class="check">✓</span> Bordir: <strong>Komputer (Depan, Belakang, Lengan)</strong></li>
+        </ul>
+        <div class="price-box">
+          <div class="price-item">
+            <span>Lengan Pendek</span>
+            <strong class="price-amount">Rp 150.000</strong>
+          </div>
+          <div class="price-item">
+            <span>Lengan Panjang</span>
+            <strong class="price-amount">Rp 160.000</strong>
+          </div>
+        </div>
+        <div class="payment-info">
+          <div>
+            <div class="bank-name">BRI :</div>
+            <div class="bank-acc">495601047065537</div>
+            <div class="bank-owner">ATAS NAMA DEANANDA</div>
+          </div>
+          <div class="dp-info">
+            DP : Rp 50.000
+          </div>
+        </div>
+      </div>
+
+      <div class="card glass">
+        <h3 class="card-title"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#4da6ff" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg> Size Chart</h3>
+        <p class="chart-desc">Panduan ukuran (dalam centimeter)</p>
+        <div class="table-responsive">
+          <table class="size-table">
+            <thead>
+              <tr>
+                <th rowspan="2">SIZE</th>
+                <th colspan="2">BADAN</th>
+                <th colspan="2">LENGAN</th>
+              </tr>
+              <tr>
+                <th>LEBAR</th>
+                <th>PANJANG</th>
+                <th>PENDEK</th>
+                <th>PANJANG</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td class="size-col">S</td><td>47</td><td>70</td><td>21</td><td>57</td></tr>
+              <tr><td class="size-col">M</td><td>49</td><td>71</td><td>22</td><td>58</td></tr>
+              <tr><td class="size-col">L</td><td>51</td><td>73</td><td>23</td><td>59</td></tr>
+              <tr><td class="size-col">XL</td><td>53</td><td>75</td><td>24</td><td>60</td></tr>
+              <tr><td class="size-col">2XL</td><td>56</td><td>77</td><td>25</td><td>61</td></tr>
+              <tr><td class="size-col">3XL</td><td>60</td><td>80</td><td>26</td><td>62</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="chart-note">* Batas toleransi kesalahan size chart ± 1 CM</p>
+      </div>
+    </div>
+
+    <!-- Form Pemesanan -->
+    <div class="card glass form-card">
+      <h3 class="text-center card-title">Formulir Pemesanan</h3>
+      <form id="form-pesanan">
+        <div class="form-row">
+          <div class="form-group">
+            <label for="nama">Nama Lengkap</label>
+            <input type="text" id="nama" name="nama" placeholder="Masukkan nama lengkap" required>
+          </div>
+          <div class="form-group">
+            <label for="noWa">Nomor WhatsApp</label>
+            <input type="text" id="noWa" name="noWa" placeholder="08xxxxxxxxxx" required>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="divisi">Divisi</label>
+            <div class="select-wrapper">
+              <select id="divisi" name="divisi" required>
+                <option value="" disabled selected>Pilih Divisi...</option>
+                <option value="WEB">WEB</option>
+                <option value="Mobile">Mobile</option>
+                <option value="IoT">IoT</option>
+                <option value="SC">SC</option>
+                <option value="UI UX">UI UX</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="jenisPdh">Jenis PDH</label>
+            <div class="select-wrapper">
+              <select id="jenisPdh" name="jenisPdh" required>
+                <option value="" disabled selected>Pilih Jenis Lengan...</option>
+                <option value="Lengan Pendek">Lengan Pendek</option>
+                <option value="Lengan Panjang">Lengan Panjang</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="ukuran">Ukuran</label>
+            <div class="select-wrapper">
+              <select id="ukuran" name="ukuran" required>
+                <option value="" disabled selected>Pilih Ukuran...</option>
+                <option value="S">S</option>
+                <option value="M">M</option>
+                <option value="L">L</option>
+                <option value="XL">XL</option>
+                <option value="2XL">2XL</option>
+                <option value="3XL">3XL</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="volume">Volume (Jumlah)</label>
+            <input type="number" id="volume" name="volume" min="1" value="1" required>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="buktiTrans">Bukti Transfer (Gambar / PDF)</label>
+          <div class="file-upload">
+            <input type="file" id="buktiTrans" name="buktiTrans" accept="image/*,application/pdf" required>
+          </div>
+        </div>
+
+        <button type="submit" id="btn-submit" class="btn-primary">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg>
+          KIRIM PESANAN
+        </button>
+      </form>
+      <div id="message" class="message" style="display: none;"></div>
+    </div>
+
+    <!-- Tabel Daftar Reservasi -->
+    <div class="card glass table-card">
+      <div class="table-header">
+        <h3 class="card-title"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#4da6ff" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><line x1="3" y1="6" x2="3.01" y2="6"></line><line x1="3" y1="12" x2="3.01" y2="12"></line><line x1="3" y1="18" x2="3.01" y2="18"></line></svg> Daftar Reservasi PDH</h3>
+        <div class="total-order" id="total-order-badge">Total Order: 0</div>
+      </div>
+      <div class="table-responsive">
+        <table class="data-table" id="data-table">
+          <thead>
+            <tr>
+              <th>NO</th>
+              <th>NAMA PEMESAN</th>
+              <th>UKURAN</th>
+              <th>LENGAN</th>
+              <th>JML</th>
+              <th>BAYAR</th>
+              <th>PRODUKSI</th>
+              <th>WAKTU ORDER</th>
+            </tr>
+          </thead>
+          <tbody id="table-body">
+            <tr>
+              <td colspan="8" class="text-center loading-text">Memuat data pesanan...</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
