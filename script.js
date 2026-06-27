@@ -1,5 +1,5 @@
 // PENTING: Ganti string ini dengan URL Web App (Deployment) dari Google Apps Script Anda!
-const GAS_API_URL = 'GANTI_DENGAN_URL_WEB_APP_APPS_SCRIPT_ANDA';
+const GAS_API_URL = 'https://script.google.com/macros/s/AKfycbyzHqAx49RV-iKTrwZYJboSnsOynhc4t2sCngZOVst2gVtqih82qfrjQ9APjzgFSDevdw/exec';
 
 let isAdmin = false;
 let globalData = [];
