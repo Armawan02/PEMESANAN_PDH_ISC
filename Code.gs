@@ -29,8 +29,7 @@ function doGet(e) {
         statusProses: row[7],
         waktu: row[9],
         karya: row[10] || '',
-        validasi: row[11] || '',
-        jenisLengan: row[12] || ''
+        validasi: row[11] || ''
       });
     }
     
@@ -90,8 +89,8 @@ function doPost(e) {
     const sheet = ss.getSheetByName('Pemesanan') || ss.insertSheet('Pemesanan');
     
     if (sheet.getLastRow() === 0) {
-      sheet.appendRow(['Nama', 'Ukuran', 'Divisi', 'Jenis PDH', 'volume', 'Bukti Trans', 'Status Bayar', 'Status Proses', 'Nomor WhatsApp', 'Waktu Pemesanan', 'Link Karya', 'Validasi', 'Jenis Lengan']);
-      sheet.getRange(1, 1, 1, 13).setFontWeight('bold').setBackground('#e0e0e0');
+      sheet.appendRow(['Nama', 'Ukuran', 'Divisi', 'Jenis PDH', 'volume', 'Bukti Trans', 'Status Bayar', 'Status Proses', 'Nomor WhatsApp', 'Waktu Pemesanan', 'Link Karya', 'Validasi']);
+      sheet.getRange(1, 1, 1, 12).setFontWeight('bold').setBackground('#e0e0e0');
     }
     
     let fileUrl = '';
@@ -138,8 +137,7 @@ function doPost(e) {
       "'" + data.noWa, 
       new Date(),
       karyaUrl,
-      statusValidasi,
-      data.jenisLengan || ''
+      statusValidasi
     ];
     
     sheet.appendRow(rowData);

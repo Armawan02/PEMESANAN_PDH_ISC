@@ -37,8 +37,8 @@ document.getElementById('form-pesanan').addEventListener('submit', async functio
   messageDiv.className = 'message';
   
   try {
-    if (GAS_API_URL === 'https://script.google.com/macros/s/AKfycbyzHqAx49RV-iKTrwZYJboSnsOynhc4t2sCngZOVst2gVtqih82qfrjQ9APjzgFSDevdw/exec' || !GAS_API_URL.startsWith('http')) {
-        throw new Error("PENTING: Konfigurasi sistem belum selesai! Anda harus mengganti variabel GAS_API_URL di script.js dengan URL hasil deploy backend Google Apps Script.");
+    if (GAS_API_URL === 'GANTI_DENGAN_URL_WEB_APP_APPS_SCRIPT_ANDA' || !GAS_API_URL.startsWith('http')) {
+        throw new Error("PENTING: Konfigurasi sistem belum selesai! Anda harus mengganti variabel GAS_API_URL di baris ke-2 script.js dengan URL hasil deploy backend Google Apps Script.");
     }
 
     const fileInput = document.getElementById('buktiTrans');
@@ -55,7 +55,6 @@ document.getElementById('form-pesanan').addEventListener('submit', async functio
       noWa: document.getElementById('noWa').value,
       divisi: document.getElementById('divisi').value,
       jenisPdh: document.getElementById('jenisPdh').value,
-      jenisLengan: document.getElementById('jenisLengan').value,
       ukuran: document.getElementById('ukuran').value,
       volume: document.getElementById('volume').value,
       base64File: base64File,
@@ -108,8 +107,8 @@ document.getElementById('form-pesanan').addEventListener('submit', async functio
 async function loadDataPesanan() {
   const tbody = document.getElementById('table-body');
   
-  if (GAS_API_URL === 'https://script.google.com/macros/s/AKfycbyzHqAx49RV-iKTrwZYJboSnsOynhc4t2sCngZOVst2gVtqih82qfrjQ9APjzgFSDevdw/exec' || !GAS_API_URL.startsWith('http')) {
-      tbody.innerHTML = '<tr><td colspan="9" class="text-center" style="color: var(--warning);">Sistem menunggu konfigurasi URL Backend...</td></tr>';
+  if (GAS_API_URL === 'GANTI_DENGAN_URL_WEB_APP_APPS_SCRIPT_ANDA' || !GAS_API_URL.startsWith('http')) {
+      tbody.innerHTML = '<tr><td colspan="11" class="text-center" style="color: var(--warning);">Sistem menunggu konfigurasi URL Backend...</td></tr>';
       return;
   }
 
@@ -197,7 +196,6 @@ function renderTable(data) {
         <td>${item.no}</td>
         <td style="font-weight: 600;">${item.nama}</td>
         <td style="color: var(--primary); font-weight: bold;">${item.ukuran}</td>
-        <td>${item.jenisLengan}</td>
         <td>${item.jenisPdh}</td>
         <td>${item.volume} Pcs</td>
         <td>${buktiTfCell}</td>
@@ -213,7 +211,7 @@ function renderTable(data) {
 
 function renderDashboard(data) {
     let lunas = 0, dp = 0, pending = 0, proses = 0, selesai = 0;
-    let dist = { S: {pdk:0, pjg:0}, M: {pdk:0, pjg:0}, L: {pdk:0, pjg:0}, XL: {pdk:0, pjg:0}, XXL: {pdk:0, pjg:0} };
+    let dist = { S: {std:0, exc:0}, M: {std:0, exc:0}, L: {std:0, exc:0}, XL: {std:0, exc:0}, XXL: {std:0, exc:0} };
 
     data.forEach(item => {
         let vol = parseInt(item.volume) || 1;
@@ -226,9 +224,9 @@ function renderDashboard(data) {
         
         let uk = item.ukuran.toUpperCase();
         if(uk === '2XL') uk = 'XXL'; // Just in case old data has 2XL
-        let lgn = item.jenisPdh.toLowerCase().includes('pendek') ? 'pdk' : 'pjg';
+        let typePdh = item.jenisPdh.toLowerCase().includes('standard') ? 'std' : 'exc';
         if(dist[uk]) {
-            dist[uk][lgn] += vol;
+            dist[uk][typePdh] += vol;
         }
     });
 
@@ -238,16 +236,29 @@ function renderDashboard(data) {
     document.getElementById('stat-proses').textContent = proses;
     document.getElementById('stat-selesai').textContent = selesai;
 
-    let distHtml = '';
-    for(let uk in dist) {
-        let total = dist[uk].pdk + dist[uk].pjg;
-        distHtml += `
-        <div class="dist-item">
-           <div class="dist-size">${uk}: ${total}</div>
-           <div class="dist-detail">${dist[uk].pdk} Pdk | ${dist[uk].pjg} Pjg</div>
-        </div>`;
-    }
-    document.getElementById('dist-grid').innerHTML = distHtml;
+    const distGrid = document.getElementById('dist-grid');
+    distGrid.innerHTML = '';
+    const ukurans = ['S','M','L','XL','XXL'];
+    ukurans.forEach(uk => {
+       const std = dist[uk].std;
+       const exc = dist[uk].exc;
+       const total = std + exc;
+       
+       const distItem = document.createElement('div');
+       distItem.className = 'dist-item';
+       distItem.innerHTML = `
+          <div class="dist-size">${uk}</div>
+          <div class="dist-bar-container" style="height: 8px; background: #e2e8f0; border-radius: 4px; overflow: hidden; display: flex; margin: 5px 0;">
+             <div style="width: ${total > 0 ? (std/total)*100 : 0}%; background: #3b82f6;"></div>
+             <div style="width: ${total > 0 ? (exc/total)*100 : 0}%; background: #a855f7;"></div>
+          </div>
+          <div class="dist-details" style="font-size: 11px; color: var(--text-muted); display:flex; gap:5px;">
+             <span style="color:#3b82f6;">STD: ${std}</span> | 
+             <span style="color:#a855f7;">EXC: ${exc}</span>
+          </div>
+       `;
+       distGrid.appendChild(distItem);
+    });
 }
 
 window.updateStatus = async function(rowId, type, value) {
