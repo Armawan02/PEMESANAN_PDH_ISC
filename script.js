@@ -13,6 +13,18 @@ function getBase64(file) {
   });
 }
 
+document.getElementById('jenisPdh').addEventListener('change', function(e) {
+  const karyaGroup = document.getElementById('karya-group');
+  const fileKarya = document.getElementById('fileKarya');
+  if (e.target.value === 'Exclusive') {
+    karyaGroup.style.display = 'block';
+    fileKarya.required = true;
+  } else {
+    karyaGroup.style.display = 'none';
+    fileKarya.required = false;
+  }
+});
+
 document.getElementById('form-pesanan').addEventListener('submit', async function(event) {
   event.preventDefault();
   
@@ -43,12 +55,23 @@ document.getElementById('form-pesanan').addEventListener('submit', async functio
       noWa: document.getElementById('noWa').value,
       divisi: document.getElementById('divisi').value,
       jenisPdh: document.getElementById('jenisPdh').value,
+      jenisLengan: document.getElementById('jenisLengan').value,
       ukuran: document.getElementById('ukuran').value,
       volume: document.getElementById('volume').value,
       base64File: base64File,
       fileName: file.name,
       mimeType: file.type
     };
+
+    if (formData.jenisPdh === 'Exclusive') {
+      const karyaInput = document.getElementById('fileKarya');
+      const fileKarya = karyaInput.files[0];
+      if (!fileKarya) throw new Error("File Karya/Ajuan wajib diunggah untuk tipe Exclusive.");
+      if(fileKarya.size > 5 * 1024 * 1024) throw new Error("Ukuran file karya terlalu besar. Maksimal 5MB.");
+      formData.karyaBase64 = await getBase64(fileKarya);
+      formData.karyaFileName = fileKarya.name;
+      formData.karyaMimeType = fileKarya.type;
+    }
     
     const response = await fetch(GAS_API_URL, {
         method: 'POST',
@@ -129,10 +152,12 @@ function renderTable(data) {
          }
       }
 
-      let buktiTfCell = item.buktiTf ? `<a href="${item.buktiTf}" target="_blank" class="btn-sm"><svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg> Cek TF</a>` : '-';
+      let buktiTfCell = item.buktiTf ? `<a href="${item.buktiTf}" target="_blank" class="btn-sm"><svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg> TF</a>` : '-';
+      let karyaCell = item.karya ? `<a href="${item.karya}" target="_blank" class="btn-sm"><svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16c0 1.1.9 2 2 2h12a2 2 0 0 0 2-2V8l-6-6z"></path><path d="M14 3v5h5M16 13H8M16 17H8M10 9H8"></path></svg> Karya</a>` : '-';
 
       let bayarCell = '';
       let prosesCell = '';
+      let validasiCell = '';
       
       if(isAdmin) {
           bayarCell = `<select class="admin-select" onchange="updateStatus(${item.rowId}, 'bayar', this.value)">
@@ -145,20 +170,39 @@ function renderTable(data) {
               <option value="Proses Cetak" ${item.statusProses==='Proses Cetak'?'selected':''}>Proses Cetak</option>
               <option value="Selesai" ${item.statusProses==='Selesai'?'selected':''}>Selesai</option>
           </select>`;
+          if (item.jenisPdh === 'Exclusive') {
+              validasiCell = `<select class="admin-select" onchange="updateStatus(${item.rowId}, 'validasi', this.value)">
+                  <option value="Menunggu" ${item.validasi==='Menunggu'?'selected':''}>Menunggu</option>
+                  <option value="Lulus" ${item.validasi==='Lulus'?'selected':''}>Lulus</option>
+                  <option value="Ditolak" ${item.validasi==='Ditolak'?'selected':''}>Ditolak</option>
+              </select>`;
+          } else {
+              validasiCell = '-';
+          }
       } else {
           let badgeBayar = item.statusBayar.toLowerCase().includes('lunas') ? 'success' : (item.statusBayar.toLowerCase().includes('dp') ? 'primary' : 'warning');
           let badgeProses = item.statusProses.toLowerCase().includes('selesai') ? 'success' : (item.statusProses.toLowerCase().includes('proses') ? 'primary' : 'warning');
           bayarCell = `<span class="badge ${badgeBayar}">${item.statusBayar.toUpperCase()}</span>`;
           prosesCell = `<span class="badge ${badgeProses}">${item.statusProses.toUpperCase()}</span>`;
+          
+          if (item.jenisPdh === 'Exclusive' && item.validasi) {
+              let badgeVal = item.validasi.toLowerCase() === 'lulus' ? 'success' : (item.validasi.toLowerCase() === 'ditolak' ? 'danger' : (item.validasi.toLowerCase() === 'menunggu' ? 'warning' : 'primary'));
+              validasiCell = `<span class="badge ${badgeVal}">${item.validasi.toUpperCase()}</span>`;
+          } else {
+              validasiCell = '-';
+          }
       }
 
       tr.innerHTML = `
         <td>${item.no}</td>
         <td style="font-weight: 600;">${item.nama}</td>
         <td style="color: var(--primary); font-weight: bold;">${item.ukuran}</td>
+        <td>${item.jenisLengan}</td>
         <td>${item.jenisPdh}</td>
         <td>${item.volume} Pcs</td>
         <td>${buktiTfCell}</td>
+        <td>${karyaCell}</td>
+        <td>${validasiCell}</td>
         <td>${bayarCell}</td>
         <td>${prosesCell}</td>
         <td style="color: var(--text-muted); font-size: 12px;">${dateStr}</td>

@@ -112,17 +112,38 @@
             </div>
           </div>
           <div class="form-group">
-            <label for="jenisPdh">Jenis PDH</label>
+            <label for="jenisLengan">Jenis Lengan</label>
             <div class="select-wrapper">
-              <select id="jenisPdh" name="jenisPdh" required>
+              <select id="jenisLengan" name="jenisLengan" required>
                 <option value="" disabled selected>Pilih Jenis Lengan...</option>
-                <option value="Standard">Standard</option>
-                <option value="Exclusive">Exclusive</option>
+                <option value="Lengan Pendek">Lengan Pendek</option>
+                <option value="Lengan Panjang">Lengan Panjang</option>
               </select>
             </div>
           </div>
         </div>
 
+        <div class="form-row">
+          <div class="form-group">
+            <label for="jenisPdh">Jenis PDH</label>
+            <div class="select-wrapper">
+              <select id="jenisPdh" name="jenisPdh" required>
+                <option value="" disabled selected>Pilih Jenis PDH...</option>
+                <option value="Standard">Standard</option>
+                <option value="Exclusive">Exclusive</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-group"></div>
+        </div>
+
+        <div class="form-group" id="karya-group" style="display: none; background: rgba(16, 185, 129, 0.1); padding: 15px; border-radius: 12px; border: 1px dashed rgba(16, 185, 129, 0.3); margin-bottom: 20px;">
+          <label for="fileKarya" style="color: #10b981;">Unggah Karya / Ajuan (Khusus Exclusive)</label>
+          <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 10px;">Untuk tipe Exclusive, karya Anda akan melalui tahap validasi oleh admin.</p>
+          <div class="file-upload">
+            <input type="file" id="fileKarya" name="fileKarya" accept="image/*,application/pdf">
+          </div>
+        </div>
         <div class="form-row">
           <div class="form-group">
             <label for="ukuran">Ukuran</label>
@@ -223,8 +244,11 @@
               <th>NAMA PEMESAN</th>
               <th>UKURAN</th>
               <th>LENGAN</th>
+              <th>JENIS PDH</th>
               <th>JML</th>
               <th>BUKTI TF</th>
+              <th>KARYA</th>
+              <th>VALIDASI</th>
               <th>BAYAR</th>
               <th>PRODUKSI</th>
               <th>WAKTU ORDER</th>
@@ -232,7 +256,7 @@
           </thead>
           <tbody id="table-body">
             <tr>
-              <td colspan="8" class="text-center loading-text">Memuat data pesanan...</td>
+              <td colspan="12" class="text-center loading-text">Memuat data pesanan...</td>
             </tr>
           </tbody>
         </table>

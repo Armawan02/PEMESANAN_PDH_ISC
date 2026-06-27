@@ -27,7 +27,10 @@ function doGet(e) {
         buktiTf: row[5],
         statusBayar: row[6],
         statusProses: row[7],
-        waktu: row[9]
+        waktu: row[9],
+        karya: row[10] || '',
+        validasi: row[11] || '',
+        jenisLengan: row[12] || ''
       });
     }
     
@@ -75,6 +78,9 @@ function doPost(e) {
        } else if (data.type === 'proses') {
           // Kolom ke-8 adalah Status Proses (H)
           sheet.getRange(data.rowId, 8).setValue(data.value);
+       } else if (data.type === 'validasi') {
+          // Kolom ke-12 adalah Status Validasi (L)
+          sheet.getRange(data.rowId, 12).setValue(data.value);
        }
        return ContentService.createTextOutput(JSON.stringify({ success: true, message: 'Status berhasil diperbarui' })).setMimeType(ContentService.MimeType.JSON);
     }
@@ -84,8 +90,8 @@ function doPost(e) {
     const sheet = ss.getSheetByName('Pemesanan') || ss.insertSheet('Pemesanan');
     
     if (sheet.getLastRow() === 0) {
-      sheet.appendRow(['Nama', 'Ukuran', 'Divisi', 'Jenis PDH', 'volume', 'Bukti Trans', 'Status Bayar', 'Status Proses', 'Nomor WhatsApp', 'Waktu Pemesanan']);
-      sheet.getRange(1, 1, 1, 10).setFontWeight('bold').setBackground('#e0e0e0');
+      sheet.appendRow(['Nama', 'Ukuran', 'Divisi', 'Jenis PDH', 'volume', 'Bukti Trans', 'Status Bayar', 'Status Proses', 'Nomor WhatsApp', 'Waktu Pemesanan', 'Link Karya', 'Validasi', 'Jenis Lengan']);
+      sheet.getRange(1, 1, 1, 13).setFontWeight('bold').setBackground('#e0e0e0');
     }
     
     let fileUrl = '';
@@ -103,6 +109,23 @@ function doPost(e) {
       fileUrl = file.getUrl();
     }
     
+    let karyaUrl = '';
+    let statusValidasi = '';
+    if (data.karyaBase64) {
+      const splitBaseKarya = data.karyaBase64.split(',');
+      const base64DataKarya = splitBaseKarya[1];
+      const blobKarya = Utilities.newBlob(Utilities.base64Decode(base64DataKarya), data.karyaMimeType, data.karyaFileName);
+      
+      const folderNameKarya = "Karya PDH Exclusive";
+      const foldersKarya = DriveApp.getFoldersByName(folderNameKarya);
+      let folderKarya = foldersKarya.hasNext() ? foldersKarya.next() : DriveApp.createFolder(folderNameKarya);
+      
+      const fileKarya = folderKarya.createFile(blobKarya);
+      fileKarya.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW);
+      karyaUrl = fileKarya.getUrl();
+      statusValidasi = 'Menunggu';
+    }
+
     const rowData = [
       data.nama,
       data.ukuran,
@@ -113,7 +136,10 @@ function doPost(e) {
       'Pending', 
       'Proses',  
       "'" + data.noWa, 
-      new Date() 
+      new Date(),
+      karyaUrl,
+      statusValidasi,
+      data.jenisLengan || ''
     ];
     
     sheet.appendRow(rowData);
