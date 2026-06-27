@@ -121,7 +121,7 @@ function doPost(e) {
                 const base64DataKarya = splitBaseKarya[1];
                 const blobKarya = Utilities.newBlob(Utilities.base64Decode(base64DataKarya), item.karyaMimeType, item.karyaFileName);
                 
-                const folderNameKarya = "Karya PDH Exclusive";
+                const folderNameKarya = "Dokumen Pendukung PDH Exclusive";
                 const foldersKarya = DriveApp.getFoldersByName(folderNameKarya);
                 let folderKarya = foldersKarya.hasNext() ? foldersKarya.next() : DriveApp.createFolder(folderNameKarya);
                 

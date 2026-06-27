@@ -121,8 +121,8 @@ document.getElementById('form-pesanan').addEventListener('submit', async functio
        if (jp === 'Exclusive') {
            const karyaInput = item.querySelector('.fileKarya-local');
            const fileKarya = karyaInput.files[0];
-           if (!fileKarya) throw new Error("File Karya/Ajuan wajib diunggah untuk tipe Exclusive.");
-           if (fileKarya.size > 5 * 1024 * 1024) throw new Error("Ukuran file karya terlalu besar. Maksimal 5MB.");
+           if (!fileKarya) throw new Error("Dokumen Pendukung wajib diunggah untuk tipe Exclusive.");
+           if (fileKarya.size > 5 * 1024 * 1024) throw new Error("Ukuran file dokumen terlalu besar. Maksimal 5MB.");
            
            itemData.karyaBase64 = await getBase64(fileKarya);
            itemData.karyaFileName = fileKarya.name;
@@ -246,7 +246,7 @@ function renderTable(data) {
       if (item.karya) {
           let urls = item.karya.split(',').map(s => s.trim()).filter(s => s);
           if (urls.length > 0) {
-              karyaCell = urls.map((u, idx) => `<button type="button" onclick="openImageModal('${u}')" class="btn-sm" style="background: none; border: 1px solid var(--border); color: var(--text); padding: 4px 8px; cursor: pointer; border-radius: 4px; margin: 2px;"><svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16c0 1.1.9 2 2 2h12a2 2 0 0 0 2-2V8l-6-6z"></path><path d="M14 3v5h5M16 13H8M16 17H8M10 9H8"></path></svg> Karya ${urls.length > 1 ? idx+1 : ''}</button>`).join(' ');
+              karyaCell = urls.map((u, idx) => `<button type="button" onclick="openImageModal('${u}')" class="btn-sm" style="background: none; border: 1px solid var(--border); color: var(--text); padding: 4px 8px; cursor: pointer; border-radius: 4px; margin: 2px;"><svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16c0 1.1.9 2 2 2h12a2 2 0 0 0 2-2V8l-6-6z"></path><path d="M14 3v5h5M16 13H8M16 17H8M10 9H8"></path></svg> Dokumen ${urls.length > 1 ? idx+1 : ''}</button>`).join(' ');
           }
       }
 
