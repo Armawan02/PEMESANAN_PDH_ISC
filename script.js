@@ -208,9 +208,33 @@ function renderTable(data) {
       }
 
       let vols = String(item.volume).split(',').map(s => parseInt(s.trim()) || 1);
-      let totalVol = vols.reduce((a, b) => a + b, 0);
-      let nominal = totalVol * 155000;
-      let nominalStr = `Rp ${nominal.toLocaleString('id-ID')}`;
+      let jenisPdhs = String(item.jenisPdh).split(',').map(s => s.trim().toLowerCase());
+      
+      let calcNominal = 0;
+      let pendingNominal = 0;
+
+      for (let i = 0; i < vols.length; i++) {
+          let v = vols[i];
+          let typePdh = (jenisPdhs[i] || '');
+          let val = (item.validasi || '').toLowerCase();
+          
+          if (typePdh.includes('exclusive')) {
+              if (val === 'disetujui' || val === 'lulus') {
+                  calcNominal += v * 155000;
+              } else if (val === 'tidak disetujui' || val === 'ditolak') {
+                  // Ditolak = 0
+              } else {
+                  pendingNominal += v * 155000;
+              }
+          } else {
+              calcNominal += v * 155000;
+          }
+      }
+
+      let nominalStr = `Rp ${calcNominal.toLocaleString('id-ID')}`;
+      if (pendingNominal > 0) {
+          nominalStr += `<br><span style="font-size:11px; color:#f59e0b; font-weight:normal;">(+Rp ${pendingNominal.toLocaleString('id-ID')} Menunggu Validasi)</span>`;
+      }
 
       let buktiTfCell = item.buktiTf ? `<button type="button" onclick="openImageModal('${item.buktiTf}')" class="btn-sm" style="background: none; border: 1px solid var(--border); color: var(--text); padding: 4px 8px; cursor: pointer; border-radius: 4px;"><svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg> TF</button>` : '-';
       let karyaCell = item.karya ? `<button type="button" onclick="openImageModal('${item.karya}')" class="btn-sm" style="background: none; border: 1px solid var(--border); color: var(--text); padding: 4px 8px; cursor: pointer; border-radius: 4px;"><svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16c0 1.1.9 2 2 2h12a2 2 0 0 0 2-2V8l-6-6z"></path><path d="M14 3v5h5M16 13H8M16 17H8M10 9H8"></path></svg> Karya</button>` : '-';
@@ -294,10 +318,24 @@ function renderDashboard(data) {
         let ukurans = String(item.ukuran).split(',').map(s => s.trim().toUpperCase());
         let jenisPdhs = String(item.jenisPdh).split(',').map(s => s.trim().toLowerCase());
 
+        let calcNominal = 0;
         let totalVol = vols.reduce((a, b) => a + b, 0);
         
-        let nominal = totalVol * 155000;
-        totalOmset += nominal;
+        for (let i = 0; i < vols.length; i++) {
+            let v = vols[i];
+            let typePdh = (jenisPdhs[i] || '');
+            let val = (item.validasi || '').toLowerCase();
+            
+            if (typePdh.includes('exclusive')) {
+                if (val === 'disetujui' || val === 'lulus') {
+                    calcNominal += v * 155000;
+                }
+            } else {
+                calcNominal += v * 155000;
+            }
+        }
+        
+        totalOmset += calcNominal;
 
         if(item.statusBayar.toLowerCase().includes('lunas')) lunas += totalVol;
         else if(item.statusBayar.toLowerCase().includes('dp')) dp += totalVol;
