@@ -487,3 +487,18 @@ input[type="file"]::file-selector-button:hover { background: rgba(255,255,255,0.
 .btn-sm { background: rgba(77, 166, 255, 0.1); border: 1px solid rgba(77, 166, 255, 0.3); color: var(--primary); padding: 4px 10px; border-radius: 6px; font-size: 12px; cursor: pointer; display: inline-flex; align-items: center; gap: 4px; text-decoration: none; transition: background 0.2s; }
 .btn-sm:hover { background: rgba(77, 166, 255, 0.2); }
 
+/* Footer Help */
+.footer-help { margin-top: 30px; background: rgba(18, 24, 38, 0.8); border: 1px solid rgba(77, 166, 255, 0.15); border-radius: 16px; padding: 30px; display: flex; justify-content: space-between; align-items: center; position: relative; overflow: hidden; box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3); animation: fadeInUp 0.8s ease backwards; animation-delay: 0.4s; }
+@media (max-width: 768px) { .footer-help { flex-direction: column; align-items: flex-start; gap: 20px; } }
+.help-content { position: relative; z-index: 2; max-width: 400px; }
+.help-content h3 { font-size: 22px; font-weight: 800; color: #fff; margin-bottom: 8px; letter-spacing: 0.5px; }
+.help-content p { color: var(--text-muted); font-size: 13px; line-height: 1.5; }
+.help-contacts { display: flex; gap: 16px; position: relative; z-index: 2; }
+@media (max-width: 480px) { .help-contacts { flex-direction: column; width: 100%; } }
+.contact-card { display: flex; align-items: center; gap: 12px; background: rgba(11, 14, 20, 0.6); border: 1px solid rgba(255,255,255,0.05); padding: 12px 20px; border-radius: 12px; text-decoration: none; transition: all 0.3s; }
+.contact-card:hover { background: rgba(77, 166, 255, 0.1); border-color: rgba(77, 166, 255, 0.3); transform: translateY(-2px); }
+.contact-icon { background: rgba(77, 166, 255, 0.1); color: var(--primary); width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
+.contact-info { display: flex; flex-direction: column; }
+.contact-name { color: #fff; font-weight: 700; font-size: 14px; }
+.contact-phone { color: var(--text-muted); font-size: 11px; letter-spacing: 0.5px; }
+.bg-headphone { position: absolute; right: -20px; bottom: -40px; width: 150px; height: 150px; color: rgba(255,255,255,0.02); z-index: 1; pointer-events: none; }
