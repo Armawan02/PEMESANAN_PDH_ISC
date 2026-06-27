@@ -97,56 +97,63 @@
           </div>
         </div>
 
-        <div class="form-row">
-          <div class="form-group">
-            <label for="divisi">Divisi</label>
-            <div class="select-wrapper">
-              <select id="divisi" name="divisi" required>
-                <option value="" disabled selected>Pilih Divisi...</option>
-                <option value="WEB">WEB</option>
-                <option value="Mobile">Mobile</option>
-                <option value="IoT">IoT</option>
-                <option value="SC">SC</option>
-                <option value="UI UX">UI UX</option>
-              </select>
-            </div>
+        <div class="form-group">
+          <label for="divisi">Divisi</label>
+          <div class="select-wrapper">
+            <select id="divisi" name="divisi" required>
+              <option value="" disabled selected>Pilih Divisi...</option>
+              <option value="WEB">WEB</option>
+              <option value="Mobile">Mobile</option>
+              <option value="IoT">IoT</option>
+              <option value="SC">SC</option>
+              <option value="UI UX">UI UX</option>
+            </select>
           </div>
-          <div class="form-group">
-            <label for="jenisPdh">Jenis PDH</label>
-            <div class="select-wrapper">
-              <select id="jenisPdh" name="jenisPdh" required>
-                <option value="" disabled selected>Pilih Jenis PDH...</option>
-                <option value="Standard">Standard</option>
-                <option value="Exclusive">Exclusive</option>
-              </select>
+        </div>
+
+        <div id="pesanan-container">
+          <div class="pesanan-item" style="border: 1px solid rgba(255,255,255,0.1); padding: 15px; border-radius: 8px; margin-bottom: 15px; background: rgba(0,0,0,0.1);">
+            <div class="form-row">
+              <div class="form-group">
+                <label>Jenis PDH</label>
+                <div class="select-wrapper">
+                  <select class="jenisPdh-input" required>
+                    <option value="" disabled selected>Pilih Jenis PDH...</option>
+                    <option value="Standard">Standard</option>
+                    <option value="Exclusive">Exclusive</option>
+                  </select>
+                </div>
+              </div>
+              <div class="form-group">
+                <label>Ukuran</label>
+                <div class="select-wrapper">
+                  <select class="ukuran-input" required>
+                    <option value="" disabled selected>Pilih Ukuran...</option>
+                    <option value="S">S</option>
+                    <option value="M">M</option>
+                    <option value="L">L</option>
+                    <option value="XL">XL</option>
+                    <option value="XXL">XXL</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+            <div class="form-group" style="margin-bottom: 0;">
+              <label>Volume (Jumlah)</label>
+              <input type="number" class="volume-input" min="1" value="1" required>
             </div>
           </div>
         </div>
+
+        <button type="button" id="btn-tambah-pesanan" style="background: rgba(59, 130, 246, 0.1); color: #3b82f6; border: 1px dashed rgba(59, 130, 246, 0.5); width: 100%; padding: 12px; border-radius: 8px; margin-bottom: 20px; font-weight: bold; cursor: pointer; transition: all 0.3s ease;">
+          + Tambah Pesanan Lain
+        </button>
 
         <div class="form-group" id="karya-group" style="display: none; background: rgba(16, 185, 129, 0.1); padding: 15px; border-radius: 12px; border: 1px dashed rgba(16, 185, 129, 0.3); margin-bottom: 20px;">
           <label for="fileKarya" style="color: #10b981;">Unggah Karya / Ajuan (Khusus Exclusive)</label>
           <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 10px;">Untuk tipe Exclusive, karya Anda akan melalui tahap validasi oleh admin.</p>
           <div class="file-upload">
             <input type="file" id="fileKarya" name="fileKarya" accept="image/*,application/pdf">
-          </div>
-        </div>
-        <div class="form-row">
-          <div class="form-group">
-            <label for="ukuran">Ukuran</label>
-            <div class="select-wrapper">
-              <select id="ukuran" name="ukuran" required>
-                <option value="" disabled selected>Pilih Ukuran...</option>
-                <option value="S">S</option>
-                <option value="M">M</option>
-                <option value="L">L</option>
-                <option value="XL">XL</option>
-                <option value="XXL">XXL</option>
-              </select>
-            </div>
-          </div>
-          <div class="form-group">
-            <label for="volume">Volume (Jumlah)</label>
-            <input type="number" id="volume" name="volume" min="1" value="1" required>
           </div>
         </div>
 

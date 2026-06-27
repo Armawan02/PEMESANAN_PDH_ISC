@@ -13,16 +13,60 @@ function getBase64(file) {
   });
 }
 
-document.getElementById('jenisPdh').addEventListener('change', function(e) {
-  const karyaGroup = document.getElementById('karya-group');
-  const fileKarya = document.getElementById('fileKarya');
-  if (e.target.value === 'Exclusive') {
-    karyaGroup.style.display = 'block';
-    fileKarya.required = true;
-  } else {
-    karyaGroup.style.display = 'none';
-    fileKarya.required = false;
-  }
+function checkExclusive() {
+    const jenisInputs = document.querySelectorAll('.jenisPdh-input');
+    let hasExclusive = false;
+    jenisInputs.forEach(input => {
+        if (input.value === 'Exclusive') hasExclusive = true;
+    });
+    
+    const karyaGroup = document.getElementById('karya-group');
+    const fileKarya = document.getElementById('fileKarya');
+    if (hasExclusive) {
+        karyaGroup.style.display = 'block';
+        fileKarya.required = true;
+    } else {
+        karyaGroup.style.display = 'none';
+        fileKarya.required = false;
+    }
+}
+
+document.getElementById('pesanan-container').addEventListener('change', function(e) {
+    if (e.target.classList.contains('jenisPdh-input')) {
+        checkExclusive();
+    }
+});
+
+document.getElementById('btn-tambah-pesanan').addEventListener('click', function() {
+    const container = document.getElementById('pesanan-container');
+    const firstItem = container.querySelector('.pesanan-item');
+    const newItem = firstItem.cloneNode(true);
+    
+    // Reset values
+    newItem.querySelector('.jenisPdh-input').value = '';
+    newItem.querySelector('.ukuran-input').value = '';
+    newItem.querySelector('.volume-input').value = '1';
+    
+    // Add delete button
+    if (!newItem.querySelector('.btn-hapus-pesanan')) {
+        const delBtn = document.createElement('button');
+        delBtn.type = 'button';
+        delBtn.className = 'btn-hapus-pesanan';
+        delBtn.style.cssText = 'background: rgba(239, 68, 68, 0.1); color: #ef4444; border: 1px dashed rgba(239, 68, 68, 0.5); width: 100%; padding: 8px; border-radius: 8px; margin-top: 10px; cursor: pointer; transition: all 0.3s ease;';
+        delBtn.textContent = 'Hapus Pesanan Ini';
+        delBtn.onclick = function() {
+            newItem.remove();
+            checkExclusive();
+        };
+        newItem.appendChild(delBtn);
+    } else {
+        newItem.querySelector('.btn-hapus-pesanan').onclick = function() {
+            newItem.remove();
+            checkExclusive();
+        };
+    }
+    
+    container.appendChild(newItem);
 });
 
 document.getElementById('form-pesanan').addEventListener('submit', async function(event) {
@@ -54,15 +98,27 @@ document.getElementById('form-pesanan').addEventListener('submit', async functio
       nama: document.getElementById('nama').value,
       noWa: document.getElementById('noWa').value,
       divisi: document.getElementById('divisi').value,
-      jenisPdh: document.getElementById('jenisPdh').value,
-      ukuran: document.getElementById('ukuran').value,
-      volume: document.getElementById('volume').value,
+      items: [],
       base64File: base64File,
       fileName: file.name,
       mimeType: file.type
     };
 
-    if (formData.jenisPdh === 'Exclusive') {
+    const pesananItems = document.querySelectorAll('.pesanan-item');
+    let hasExclusive = false;
+    pesananItems.forEach(item => {
+       const jp = item.querySelector('.jenisPdh-input').value;
+       const uk = item.querySelector('.ukuran-input').value;
+       const vol = item.querySelector('.volume-input').value;
+       if(jp === 'Exclusive') hasExclusive = true;
+       formData.items.push({
+           jenisPdh: jp,
+           ukuran: uk,
+           volume: vol
+       });
+    });
+
+    if (hasExclusive) {
       const karyaInput = document.getElementById('fileKarya');
       const fileKarya = karyaInput.files[0];
       if (!fileKarya) throw new Error("File Karya/Ajuan wajib diunggah untuk tipe Exclusive.");

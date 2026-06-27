@@ -127,22 +127,28 @@ function doPost(e) {
       statusValidasi = 'Menunggu';
     }
 
-    const rowData = [
-      data.nama,
-      data.ukuran,
-      data.divisi,
-      data.jenisPdh,
-      karyaUrl,
-      statusValidasi,
-      data.volume,
-      fileUrl,
-      'Pending', 
-      'Proses',  
-      "'" + data.noWa, 
-      new Date()
-    ];
-    
-    sheet.appendRow(rowData);
+    const submitDate = new Date();
+    data.items.forEach(item => {
+      let currentStatusValidasi = (item.jenisPdh === 'Exclusive') ? (statusValidasi || 'Menunggu') : '';
+      let currentKaryaUrl = (item.jenisPdh === 'Exclusive') ? karyaUrl : '';
+
+      const rowData = [
+        data.nama,
+        item.ukuran,
+        data.divisi,
+        item.jenisPdh,
+        currentKaryaUrl,
+        currentStatusValidasi,
+        item.volume,
+        fileUrl,
+        'Pending', 
+        'Proses',  
+        "'" + data.noWa, 
+        submitDate
+      ];
+      
+      sheet.appendRow(rowData);
+    });
     
     return ContentService.createTextOutput(JSON.stringify({ success: true, message: 'Pesanan berhasil dikirim!' }))
       .setMimeType(ContentService.MimeType.JSON);
