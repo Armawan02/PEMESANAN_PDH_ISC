@@ -220,6 +220,13 @@
                  <strong class="stat-value" id="stat-selesai">0</strong>
               </div>
            </div>
+           <div class="stat-card">
+              <div class="stat-icon" style="color: #ef4444;"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg></div>
+              <div class="stat-info">
+                 <span class="stat-label">TOTAL OMSET</span>
+                 <strong class="stat-value" id="stat-nominal" style="font-size: 16px;">Rp 0</strong>
+              </div>
+           </div>
         </div>
 
         <div class="dist-card">
@@ -239,6 +246,7 @@
               <th>DIVISI</th>
               <th>JENIS PDH</th>
               <th>JML</th>
+              <th>TOTAL (Rp)</th>
               <th>NO. WA</th>
               <th>BUKTI TF</th>
               <th>KARYA</th>
@@ -250,7 +258,7 @@
           </thead>
           <tbody id="table-body">
             <tr>
-              <td colspan="13" class="text-center loading-text">Memuat data pesanan...</td>
+              <td colspan="14" class="text-center loading-text">Memuat data pesanan...</td>
             </tr>
           </tbody>
         </table>
@@ -303,6 +311,12 @@
     </div>
   </div>
 
-  <script src="script.js?v=2"></script>
+  <!-- Modal for Images -->
+  <div id="image-modal" style="display: none; position: fixed; z-index: 9999; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.9); align-items: center; justify-content: center;">
+    <span onclick="document.getElementById('image-modal').style.display='none'" style="position: absolute; top: 20px; right: 35px; color: #f1f1f1; font-size: 40px; font-weight: bold; cursor: pointer;">&times;</span>
+    <img id="modal-img" style="margin: auto; display: block; max-width: 90%; max-height: 90vh; object-fit: contain; border-radius: 8px;">
+  </div>
+
+  <script src="script.js"></script>
 </body>
 </html>

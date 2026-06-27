@@ -207,8 +207,13 @@ function renderTable(data) {
          }
       }
 
-      let buktiTfCell = item.buktiTf ? `<a href="${item.buktiTf}" target="_blank" class="btn-sm"><svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg> TF</a>` : '-';
-      let karyaCell = item.karya ? `<a href="${item.karya}" target="_blank" class="btn-sm"><svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16c0 1.1.9 2 2 2h12a2 2 0 0 0 2-2V8l-6-6z"></path><path d="M14 3v5h5M16 13H8M16 17H8M10 9H8"></path></svg> Karya</a>` : '-';
+      let vols = String(item.volume).split(',').map(s => parseInt(s.trim()) || 1);
+      let totalVol = vols.reduce((a, b) => a + b, 0);
+      let nominal = totalVol * 155000;
+      let nominalStr = `Rp ${nominal.toLocaleString('id-ID')}`;
+
+      let buktiTfCell = item.buktiTf ? `<button type="button" onclick="openImageModal('${item.buktiTf}')" class="btn-sm" style="background: none; border: 1px solid var(--border); color: var(--text); padding: 4px 8px; cursor: pointer; border-radius: 4px;"><svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg> TF</button>` : '-';
+      let karyaCell = item.karya ? `<button type="button" onclick="openImageModal('${item.karya}')" class="btn-sm" style="background: none; border: 1px solid var(--border); color: var(--text); padding: 4px 8px; cursor: pointer; border-radius: 4px;"><svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16c0 1.1.9 2 2 2h12a2 2 0 0 0 2-2V8l-6-6z"></path><path d="M14 3v5h5M16 13H8M16 17H8M10 9H8"></path></svg> Karya</button>` : '-';
 
       let bayarCell = '';
       let prosesCell = '';
@@ -255,6 +260,7 @@ function renderTable(data) {
         <td>${item.divisi || '-'}</td>
         <td>${item.jenisPdh}</td>
         <td>${item.volume} Pcs</td>
+        <td style="color: #ef4444; font-weight: bold;">${nominalStr}</td>
         <td>${item.noWa || '-'}</td>
         <td>${buktiTfCell}</td>
         <td>${karyaCell}</td>
@@ -269,6 +275,7 @@ function renderTable(data) {
 
 function renderDashboard(data) {
     let lunas = 0, dp = 0, pending = 0, proses = 0, selesai = 0;
+    let totalOmset = 0;
     let dist = { S: {std:0, exc:0}, M: {std:0, exc:0}, L: {std:0, exc:0}, XL: {std:0, exc:0}, XXL: {std:0, exc:0} };
 
     data.forEach(item => {
@@ -277,6 +284,9 @@ function renderDashboard(data) {
         let jenisPdhs = String(item.jenisPdh).split(',').map(s => s.trim().toLowerCase());
 
         let totalVol = vols.reduce((a, b) => a + b, 0);
+        
+        let nominal = totalVol * 155000;
+        totalOmset += nominal;
 
         if(item.statusBayar.toLowerCase().includes('lunas')) lunas += totalVol;
         else if(item.statusBayar.toLowerCase().includes('dp')) dp += totalVol;
@@ -301,6 +311,9 @@ function renderDashboard(data) {
     document.getElementById('stat-pending').textContent = pending;
     document.getElementById('stat-proses').textContent = proses;
     document.getElementById('stat-selesai').textContent = selesai;
+    
+    const nominalElem = document.getElementById('stat-nominal');
+    if (nominalElem) nominalElem.textContent = 'Rp ' + totalOmset.toLocaleString('id-ID');
 
     const distGrid = document.getElementById('dist-grid');
     distGrid.innerHTML = '';
@@ -327,12 +340,17 @@ function renderDashboard(data) {
     });
 }
 
+// Status updates for Admin
 window.updateStatus = async function(rowId, type, value) {
-    if(!isAdmin) return;
+    if (!confirm(`Yakin ingin mengubah status menjadi ${value}?`)) {
+        loadDataPesanan();
+        return;
+    }
+    
     try {
         const response = await fetch(GAS_API_URL, {
             method: 'POST',
-            headers: {'Content-Type': 'text/plain;charset=utf-8'},
+            headers: { 'Content-Type': 'text/plain;charset=utf-8' },
             body: JSON.stringify({
                 action: 'update_status',
                 password: document.getElementById('admin-password').value,
@@ -347,16 +365,41 @@ window.updateStatus = async function(rowId, type, value) {
                 if(item.rowId === rowId) {
                     if(type === 'bayar') item.statusBayar = value;
                     if(type === 'proses') item.statusProses = value;
+                    if(type === 'validasi') item.validasi = value;
                 }
                 return item;
             });
             renderDashboard(globalData);
+            alert('Status berhasil diperbarui!');
+            loadDataPesanan();
         } else {
             alert('Gagal update: ' + result.message);
             loadDataPesanan(); 
         }
     } catch(e) {
         alert('Terjadi kesalahan saat update.');
+    }
+}
+
+// Image Modal Handler
+window.openImageModal = function(url) {
+    if(!url) return;
+    const match = url.match(/\/d\/([a-zA-Z0-9_-]+)/);
+    if(match && match[1]) {
+        const fileId = match[1];
+        const imgUrl = `https://drive.google.com/uc?id=${fileId}`;
+        const modal = document.getElementById('image-modal');
+        const modalImg = document.getElementById('modal-img');
+        
+        modalImg.onerror = function() {
+           window.open(url, '_blank');
+           modal.style.display = 'none';
+        };
+        
+        modalImg.src = imgUrl;
+        modal.style.display = 'flex';
+    } else {
+        window.open(url, '_blank');
     }
 }
 
