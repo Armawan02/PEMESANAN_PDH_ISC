@@ -14,21 +14,20 @@ function getBase64(file) {
 }
 
 function checkExclusive() {
-    const jenisInputs = document.querySelectorAll('.jenisPdh-input');
-    let hasExclusive = false;
-    jenisInputs.forEach(input => {
-        if (input.value === 'Exclusive') hasExclusive = true;
+    const items = document.querySelectorAll('.pesanan-item');
+    items.forEach(item => {
+        const select = item.querySelector('.jenisPdh-input');
+        const karyaGroup = item.querySelector('.karya-group-local');
+        const fileKarya = item.querySelector('.fileKarya-local');
+        
+        if (select.value === 'Exclusive') {
+            karyaGroup.style.display = 'block';
+            fileKarya.required = true;
+        } else {
+            karyaGroup.style.display = 'none';
+            fileKarya.required = false;
+        }
     });
-    
-    const karyaGroup = document.getElementById('karya-group');
-    const fileKarya = document.getElementById('fileKarya');
-    if (hasExclusive) {
-        karyaGroup.style.display = 'block';
-        fileKarya.required = true;
-    } else {
-        karyaGroup.style.display = 'none';
-        fileKarya.required = false;
-    }
 }
 
 document.getElementById('pesanan-container').addEventListener('change', function(e) {
@@ -46,6 +45,9 @@ document.getElementById('btn-tambah-pesanan').addEventListener('click', function
     newItem.querySelector('.jenisPdh-input').value = '';
     newItem.querySelector('.ukuran-input').value = '';
     newItem.querySelector('.volume-input').value = '1';
+    newItem.querySelector('.karya-group-local').style.display = 'none';
+    newItem.querySelector('.fileKarya-local').value = '';
+    newItem.querySelector('.fileKarya-local').required = false;
     
     // Add delete button
     if (!newItem.querySelector('.btn-hapus-pesanan')) {
@@ -105,27 +107,29 @@ document.getElementById('form-pesanan').addEventListener('submit', async functio
     };
 
     const pesananItems = document.querySelectorAll('.pesanan-item');
-    let hasExclusive = false;
-    pesananItems.forEach(item => {
+    for (let item of pesananItems) {
        const jp = item.querySelector('.jenisPdh-input').value;
        const uk = item.querySelector('.ukuran-input').value;
        const vol = item.querySelector('.volume-input').value;
-       if(jp === 'Exclusive') hasExclusive = true;
-       formData.items.push({
+       
+       let itemData = {
            jenisPdh: jp,
            ukuran: uk,
            volume: vol
-       });
-    });
-
-    if (hasExclusive) {
-      const karyaInput = document.getElementById('fileKarya');
-      const fileKarya = karyaInput.files[0];
-      if (!fileKarya) throw new Error("File Karya/Ajuan wajib diunggah untuk tipe Exclusive.");
-      if(fileKarya.size > 5 * 1024 * 1024) throw new Error("Ukuran file karya terlalu besar. Maksimal 5MB.");
-      formData.karyaBase64 = await getBase64(fileKarya);
-      formData.karyaFileName = fileKarya.name;
-      formData.karyaMimeType = fileKarya.type;
+       };
+       
+       if (jp === 'Exclusive') {
+           const karyaInput = item.querySelector('.fileKarya-local');
+           const fileKarya = karyaInput.files[0];
+           if (!fileKarya) throw new Error("File Karya/Ajuan wajib diunggah untuk tipe Exclusive.");
+           if (fileKarya.size > 5 * 1024 * 1024) throw new Error("Ukuran file karya terlalu besar. Maksimal 5MB.");
+           
+           itemData.karyaBase64 = await getBase64(fileKarya);
+           itemData.karyaFileName = fileKarya.name;
+           itemData.karyaMimeType = fileKarya.type;
+       }
+       
+       formData.items.push(itemData);
     }
     
     const response = await fetch(GAS_API_URL, {
@@ -237,7 +241,14 @@ function renderTable(data) {
       }
 
       let buktiTfCell = item.buktiTf ? `<button type="button" onclick="openImageModal('${item.buktiTf}')" class="btn-sm" style="background: none; border: 1px solid var(--border); color: var(--text); padding: 4px 8px; cursor: pointer; border-radius: 4px;"><svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg> TF</button>` : '-';
-      let karyaCell = item.karya ? `<button type="button" onclick="openImageModal('${item.karya}')" class="btn-sm" style="background: none; border: 1px solid var(--border); color: var(--text); padding: 4px 8px; cursor: pointer; border-radius: 4px;"><svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16c0 1.1.9 2 2 2h12a2 2 0 0 0 2-2V8l-6-6z"></path><path d="M14 3v5h5M16 13H8M16 17H8M10 9H8"></path></svg> Karya</button>` : '-';
+      
+      let karyaCell = '-';
+      if (item.karya) {
+          let urls = item.karya.split(',').map(s => s.trim()).filter(s => s);
+          if (urls.length > 0) {
+              karyaCell = urls.map((u, idx) => `<button type="button" onclick="openImageModal('${u}')" class="btn-sm" style="background: none; border: 1px solid var(--border); color: var(--text); padding: 4px 8px; cursor: pointer; border-radius: 4px; margin: 2px;"><svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16c0 1.1.9 2 2 2h12a2 2 0 0 0 2-2V8l-6-6z"></path><path d="M14 3v5h5M16 13H8M16 17H8M10 9H8"></path></svg> Karya ${urls.length > 1 ? idx+1 : ''}</button>`).join(' ');
+          }
+      }
 
       let bayarCell = '';
       let prosesCell = '';

@@ -110,22 +110,27 @@ function doPost(e) {
       fileUrl = file.getUrl();
     }
     
-    let karyaUrl = '';
-    let statusValidasi = '';
-    if (data.karyaBase64) {
-      const splitBaseKarya = data.karyaBase64.split(',');
-      const base64DataKarya = splitBaseKarya[1];
-      const blobKarya = Utilities.newBlob(Utilities.base64Decode(base64DataKarya), data.karyaMimeType, data.karyaFileName);
-      
-      const folderNameKarya = "Karya PDH Exclusive";
-      const foldersKarya = DriveApp.getFoldersByName(folderNameKarya);
-      let folderKarya = foldersKarya.hasNext() ? foldersKarya.next() : DriveApp.createFolder(folderNameKarya);
-      
-      const fileKarya = folderKarya.createFile(blobKarya);
-      fileKarya.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW);
-      karyaUrl = fileKarya.getUrl();
-      statusValidasi = 'Menunggu';
-    }
+    let karyaUrls = [];
+    let hasExclusive = false;
+    
+    data.items.forEach(item => {
+        if (item.jenisPdh === 'Exclusive') {
+            hasExclusive = true;
+            if (item.karyaBase64) {
+                const splitBaseKarya = item.karyaBase64.split(',');
+                const base64DataKarya = splitBaseKarya[1];
+                const blobKarya = Utilities.newBlob(Utilities.base64Decode(base64DataKarya), item.karyaMimeType, item.karyaFileName);
+                
+                const folderNameKarya = "Karya PDH Exclusive";
+                const foldersKarya = DriveApp.getFoldersByName(folderNameKarya);
+                let folderKarya = foldersKarya.hasNext() ? foldersKarya.next() : DriveApp.createFolder(folderNameKarya);
+                
+                const fileKarya = folderKarya.createFile(blobKarya);
+                fileKarya.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW);
+                karyaUrls.push(fileKarya.getUrl());
+            }
+        }
+    });
 
     const submitDate = new Date();
     
@@ -133,9 +138,8 @@ function doPost(e) {
     let allJenisPdh = data.items.map(item => item.jenisPdh).join(', ');
     let allVolume = data.items.map(item => item.volume).join(', ');
     
-    let hasExclusive = data.items.some(item => item.jenisPdh === 'Exclusive');
-    let finalStatusValidasi = hasExclusive ? (statusValidasi || 'Menunggu') : '';
-    let finalKaryaUrl = hasExclusive ? karyaUrl : '';
+    let finalStatusValidasi = hasExclusive ? 'Menunggu' : '';
+    let finalKaryaUrl = karyaUrls.join(', ');
 
     const rowData = [
       data.nama,

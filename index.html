@@ -142,20 +142,19 @@
               <label>Volume (Jumlah)</label>
               <input type="number" class="volume-input" min="1" value="1" required>
             </div>
+            <div class="form-group karya-group-local" style="display: none; background: rgba(16, 185, 129, 0.1); padding: 15px; border-radius: 12px; border: 1px dashed rgba(16, 185, 129, 0.3); margin-top: 15px; margin-bottom: 0;">
+              <label style="color: #10b981;">Unggah Karya / Ajuan (Khusus Exclusive)</label>
+              <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 10px;">Untuk tipe Exclusive, karya Anda akan melalui tahap validasi oleh admin.</p>
+              <div class="file-upload">
+                <input type="file" class="fileKarya-local" accept="image/*,application/pdf">
+              </div>
+            </div>
           </div>
         </div>
 
         <button type="button" id="btn-tambah-pesanan" style="background: rgba(59, 130, 246, 0.1); color: #3b82f6; border: 1px dashed rgba(59, 130, 246, 0.5); width: 100%; padding: 12px; border-radius: 8px; margin-bottom: 20px; font-weight: bold; cursor: pointer; transition: all 0.3s ease;">
           + Tambah Pesanan Lain
         </button>
-
-        <div class="form-group" id="karya-group" style="display: none; background: rgba(16, 185, 129, 0.1); padding: 15px; border-radius: 12px; border: 1px dashed rgba(16, 185, 129, 0.3); margin-bottom: 20px;">
-          <label for="fileKarya" style="color: #10b981;">Unggah Karya / Ajuan (Khusus Exclusive)</label>
-          <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 10px;">Untuk tipe Exclusive, karya Anda akan melalui tahap validasi oleh admin.</p>
-          <div class="file-upload">
-            <input type="file" id="fileKarya" name="fileKarya" accept="image/*,application/pdf">
-          </div>
-        </div>
 
         <div class="form-group">
           <label for="buktiTrans">Bukti Transfer (Gambar / PDF)</label>
