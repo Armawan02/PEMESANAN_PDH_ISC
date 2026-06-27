@@ -80,7 +80,7 @@ document.getElementById('form-pesanan').addEventListener('submit', async functio
   const messageDiv = document.getElementById('message');
   
   btnSubmit.disabled = true;
-  btnSubmit.innerHTML = '<svg class="spinner" viewBox="0 0 50 50" style="width:20px;height:20px;animation:spin 1s linear infinite;margin-right:8px"><circle cx="25" cy="25" r="20" fill="none" stroke="currentColor" stroke-width="4" stroke-dasharray="80" stroke-dashoffset="60" stroke-linecap="round"></circle></svg> MEMPROSES...';
+  document.getElementById('loading-overlay').style.display = 'flex';
   messageDiv.style.display = 'none';
   messageDiv.className = 'message';
   
@@ -148,6 +148,7 @@ document.getElementById('form-pesanan').addEventListener('submit', async functio
 
     const result = await response.json();
     
+    document.getElementById('loading-overlay').style.display = 'none';
     btnSubmit.disabled = false;
     btnSubmit.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg> KIRIM PESANAN';
     
@@ -162,6 +163,7 @@ document.getElementById('form-pesanan').addEventListener('submit', async functio
       messageDiv.textContent = result.message;
     }
   } catch (err) {
+    document.getElementById('loading-overlay').style.display = 'none';
     btnSubmit.disabled = false;
     btnSubmit.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg> KIRIM PESANAN';
     messageDiv.style.display = 'block';
@@ -519,7 +521,7 @@ function renderTable(data) {
 }
 
 function deleteOrder(rowId) {
-    if (!confirm('Hapus pesanan ini?')) return;
+    if (!confirm('Hapus pesanan ini? Aksi ini tidak dapat dikembalikan.')) return;
     performAdminAction('delete_order', { rowId });
 }
 

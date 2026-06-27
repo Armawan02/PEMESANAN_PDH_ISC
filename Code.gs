@@ -43,7 +43,7 @@ function doGet(e) {
     };
     
     return ContentService.createTextOutput(JSON.stringify({
-      data: result.reverse(),
+      data: result,
       config: config
     })).setMimeType(ContentService.MimeType.JSON);
   } catch (error) {
@@ -133,8 +133,8 @@ function doPost(e) {
        sheet.getRange(data.rowId, 4).setValue(data.editData.jenisPdh);
        sheet.getRange(data.rowId, 7).setValue(data.editData.volume);
        sheet.getRange(data.rowId, 11).setValue("'" + data.editData.noWa);
-
-       return ContentService.createTextOutput(JSON.stringify({ success: true, message: 'Data pesanan berhasil diperbarui' })).setMimeType(ContentService.MimeType.JSON);
+       
+       return ContentService.createTextOutput(JSON.stringify({ success: true, message: 'Data berhasil diupdate' })).setMimeType(ContentService.MimeType.JSON);
     }
 
     // --- LOGIC ORDER BARU (DEFAULT) ---
