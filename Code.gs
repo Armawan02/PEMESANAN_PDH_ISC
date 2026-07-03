@@ -1,5 +1,5 @@
 // Konstanta ID Spreadsheet untuk menyimpan data pesanan
-const SPREADSHEET_ID = 'GANTI_DENGAN_ID_SPREADSHEET_ANDA';
+const SPREADSHEET_ID = '1DdqKFPHXEXbDngJJ6L969bMYIiYag0O41p_cy0i6pNA';
 const ADMIN_PASSWORD = 'admin'; // Password default, bisa diganti
 
 /**
