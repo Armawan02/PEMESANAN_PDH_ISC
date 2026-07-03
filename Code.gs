@@ -230,7 +230,8 @@ function doPost(e) {
       submitDate
     ];
     
-    sheet.appendRow(rowData);
+    sheet.insertRowAfter(1);
+    sheet.getRange(2, 1, 1, rowData.length).setValues([rowData]);
     
     return ContentService.createTextOutput(JSON.stringify({ success: true, message: 'Pesanan berhasil dikirim!' }))
       .setMimeType(ContentService.MimeType.JSON);

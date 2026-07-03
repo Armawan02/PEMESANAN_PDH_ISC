@@ -468,31 +468,41 @@ function renderTable(data) {
 
       let vols = String(item.volume).split(',').map(s => parseInt(s.trim()) || 1);
       let jenisPdhs = String(item.jenisPdh).split(',').map(s => s.trim().toLowerCase());
+      let valids = String(item.validasi || '').split(',').map(s => s.trim().toLowerCase());
+      let getVal = (idx) => valids[idx] !== undefined ? valids[idx] : (valids[0] || '');
       
       let calcNominal = 0;
       let pendingNominal = 0;
+      let nominalStrs = [];
 
       for (let i = 0; i < vols.length; i++) {
           let v = vols[i];
           let typePdh = (jenisPdhs[i] || '');
-          let val = (item.validasi || '').toLowerCase();
+          let val = getVal(i);
           
           if (typePdh.includes('exclusive')) {
               if (val === 'disetujui' || val === 'lulus') {
-                  calcNominal += v * 155000;
+                  let amt = v * 155000;
+                  calcNominal += amt;
+                  nominalStrs.push(`Rp ${amt.toLocaleString('id-ID')}`);
               } else if (val === 'tidak disetujui' || val === 'ditolak') {
-                  // Ditolak = 0
+                  nominalStrs.push(`<span style="color:#ef4444; font-size:11px;">Ditolak</span>`);
               } else {
                   pendingNominal += v * 155000;
+                  nominalStrs.push(`<span style="color:#f59e0b; font-size:11px;">Menunggu Validasi</span>`);
               }
           } else {
-              calcNominal += v * 155000;
+              let amt = v * 155000;
+              calcNominal += amt;
+              nominalStrs.push(`Rp ${amt.toLocaleString('id-ID')}`);
           }
       }
 
-      let nominalStr = `Rp ${calcNominal.toLocaleString('id-ID')}`;
-      if (pendingNominal > 0) {
-          nominalStr += `<br><span style="font-size:11px; color:#f59e0b; font-weight:normal;">(+Rp ${pendingNominal.toLocaleString('id-ID')} Menunggu Validasi)</span>`;
+      const separator = '<hr style="margin: 6px 0; border-color: rgba(255,255,255,0.1);">';
+      let nominalStr = nominalStrs.join(separator);
+      
+      if (vols.length > 1) {
+          nominalStr += `<div style="margin-top: 8px; border-top: 1px dashed rgba(255,255,255,0.2); padding-top: 4px; font-size: 11px; color: var(--text-muted);">Grand Total:</div><div style="font-size: 14px;">Rp ${calcNominal.toLocaleString('id-ID')}</div>`;
       }
 
       let buktiTfCell = item.buktiTf ? `<button type="button" onclick="openImageModal('${item.buktiTf}')" class="btn-sm" style="background: none; border: 1px solid var(--border); color: var(--text); padding: 4px 8px; cursor: pointer; border-radius: 4px;"><svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg> TF</button>` : '-';
@@ -669,50 +679,69 @@ function generatePDF() {
     doc.setFontSize(11);
     let totalLunas = 0, totalDP = 0, omset = 0, totalPemesan = globalData.length;
     
-    globalData.forEach(item => {
+    const fmtPdf = (val) => (val || '-').toString().split(',').map(s => s.trim()).join('\n');
+    const tableColumn = ["No", "Nama", "Jabatan", "Divisi", "Ukuran", "Jenis PDH", "Volume", "Total (Rp)", "Status Bayar", "Validasi Exclusive"];
+    const tableRows = [];
+
+    globalData.forEach((item, index) => {
         let vols = String(item.volume).split(',').map(s => parseInt(s.trim()) || 1);
-        let valids = String(item.validasi).split(',').map(s => s.trim().toLowerCase());
         let jenis = String(item.jenisPdh).split(',').map(s => s.trim().toLowerCase());
+        let valids = String(item.validasi || '').split(',').map(s => s.trim().toLowerCase());
+        let getVal = (idx) => valids[idx] !== undefined ? valids[idx] : (valids[0] || '');
+        
+        let calcNominal = 0;
+        let nominalStrs = [];
         
         for (let i = 0; i < vols.length; i++) {
             let v = vols[i];
             let typePdh = (jenis[i] || '');
-            let val = (valids[i] || '');
+            let val = getVal(i);
+            
             if (typePdh.includes('exclusive')) {
                 if (val === 'disetujui' || val === 'lulus') {
-                    omset += v * 155000;
+                    let amt = v * 155000;
+                    calcNominal += amt;
+                    nominalStrs.push(`Rp ${amt.toLocaleString('id-ID')}`);
+                } else if (val === 'tidak disetujui' || val === 'ditolak') {
+                    nominalStrs.push(`Ditolak`);
+                } else {
+                    nominalStrs.push(`Menunggu`);
                 }
             } else {
-                omset += v * 155000;
+                let amt = v * 155000;
+                calcNominal += amt;
+                nominalStrs.push(`Rp ${amt.toLocaleString('id-ID')}`);
             }
         }
+        
+        omset += calcNominal;
         
         let sb = item.statusBayar.toLowerCase();
         if (sb.includes('lunas')) totalLunas++;
         if (sb.includes('dp')) totalDP++;
+        
+        let nominalStr = nominalStrs.join('\n');
+        if (vols.length > 1) {
+            nominalStr += `\nTotal: Rp ${calcNominal.toLocaleString('id-ID')}`;
+        }
+
+        tableRows.push([
+            index + 1,
+            item.nama,
+            fmtPdf(item.jabatan),
+            fmtPdf(item.divisi),
+            fmtPdf(item.ukuran),
+            fmtPdf(item.jenisPdh),
+            fmtPdf(item.volume),
+            nominalStr,
+            item.statusBayar,
+            fmtPdf(item.validasi)
+        ]);
     });
     
     doc.text(`Total Pemesan: ${totalPemesan} orang`, 14, 25);
     doc.text(`Status Pembayaran - Lunas: ${totalLunas} | DP: ${totalDP}`, 14, 31);
     doc.text(`Estimasi Omset: Rp ${omset.toLocaleString('id-ID')}`, 14, 37);
-    
-    const tableColumn = ["No", "Nama", "Jabatan", "Divisi", "Ukuran", "Jenis PDH", "Vol", "Status Bayar", "Validasi Exclusive"];
-    const tableRows = [];
-    
-    globalData.forEach((item, index) => {
-        tableRows.push([
-            index + 1,
-            item.nama,
-            item.jabatan || '-',
-            item.divisi || '-',
-            item.ukuran,
-            item.jenisPdh,
-            item.volume,
-            item.statusBayar,
-            item.validasi || '-'
-        ]);
-    });
-    
     doc.autoTable({
         head: [tableColumn],
         body: tableRows,
@@ -736,6 +765,8 @@ function renderDashboard(data) {
         let vols = String(item.volume).split(',').map(s => parseInt(s.trim()) || 1);
         let ukurans = String(item.ukuran).split(',').map(s => s.trim().toUpperCase());
         let jenisPdhs = String(item.jenisPdh).split(',').map(s => s.trim().toLowerCase());
+        let valids = String(item.validasi || '').split(',').map(s => s.trim().toLowerCase());
+        let getVal = (idx) => valids[idx] !== undefined ? valids[idx] : (valids[0] || '');
 
         let calcNominal = 0;
         let totalVol = vols.reduce((a, b) => a + b, 0);
@@ -743,7 +774,7 @@ function renderDashboard(data) {
         for (let i = 0; i < vols.length; i++) {
             let v = vols[i];
             let typePdh = (jenisPdhs[i] || '');
-            let val = (item.validasi || '').toLowerCase();
+            let val = getVal(i);
             
             if (typePdh.includes('exclusive')) {
                 if (val === 'disetujui' || val === 'lulus') {
