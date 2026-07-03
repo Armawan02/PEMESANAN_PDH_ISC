@@ -509,7 +509,7 @@ function renderTable(data) {
           }
       }
 
-      const separator = '<hr style="margin: 6px 0; border-color: rgba(255,255,255,0.1);">';
+      const separator = '<hr style="margin: 8px 0; border: 0; border-top: 1px dashed rgba(255,255,255,0.15);">';
       let nominalStr = nominalStrs.join(separator);
       
       if (vols.length > 1) {
