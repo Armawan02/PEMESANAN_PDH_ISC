@@ -38,12 +38,30 @@ function checkPengurus() {
         const pengurusGroup = item.querySelector('.pengurus-group-local');
         const pengurusInput = item.querySelector('.posisi-pengurus-input');
         
+        const jenisPdhGroup = item.querySelector('.jenisPdh-input').closest('.form-group');
+        const jenisPdhInput = item.querySelector('.jenisPdh-input');
+        
+        const divisiGroup = item.querySelector('.divisi-input').closest('.form-group');
+        const divisiInput = item.querySelector('.divisi-input');
+        
         if (select.value === 'Pengurus') {
             pengurusGroup.style.display = 'block';
             pengurusInput.required = true;
+            
+            jenisPdhGroup.style.display = 'none';
+            jenisPdhInput.required = false;
+            
+            divisiGroup.style.display = 'none';
+            divisiInput.required = false;
         } else {
             pengurusGroup.style.display = 'none';
             pengurusInput.required = false;
+            
+            jenisPdhGroup.style.display = 'block';
+            jenisPdhInput.required = true;
+            
+            divisiGroup.style.display = 'block';
+            divisiInput.required = true;
         }
     });
 }
@@ -71,6 +89,12 @@ document.getElementById('btn-tambah-pesanan').addEventListener('click', function
     newItem.querySelector('.posisi-pengurus-input').value = '';
     newItem.querySelector('.posisi-pengurus-input').required = false;
     newItem.querySelector('.volume-input').value = '1';
+    
+    newItem.querySelector('.jenisPdh-input').closest('.form-group').style.display = 'block';
+    newItem.querySelector('.jenisPdh-input').required = true;
+    newItem.querySelector('.divisi-input').closest('.form-group').style.display = 'block';
+    newItem.querySelector('.divisi-input').required = true;
+    
     newItem.querySelector('.karya-group-local').style.display = 'none';
     newItem.querySelector('.fileKarya-local').value = '';
     newItem.querySelector('.fileKarya-local').required = false;
@@ -89,7 +113,7 @@ document.getElementById('btn-tambah-pesanan').addEventListener('click', function
         };
         newItem.appendChild(delBtn);
     } else {
-        delBtn.onclick = function() {
+        newItem.querySelector('.btn-hapus-pesanan').onclick = function() {
             newItem.remove();
             checkExclusive();
             checkPengurus();
@@ -135,19 +159,32 @@ document.getElementById('form-pesanan').addEventListener('submit', async functio
 
     const pesananItems = document.querySelectorAll('.pesanan-item');
     for (let item of pesananItems) {
-       const jp = item.querySelector('.jenisPdh-input').value;
+       let jp = item.querySelector('.jenisPdh-input').value;
        const uk = item.querySelector('.ukuran-input').value;
-       const divInput = item.querySelector('.divisi-input').value;
+       let divInput = item.querySelector('.divisi-input').value;
        let jabInput = item.querySelector('.jabatan-input').value;
        const vol = item.querySelector('.volume-input').value;
        
        if (jabInput === 'Pengurus') {
            const posInput = item.querySelector('.posisi-pengurus-input').value;
            if (!posInput) throw new Error("Posisi pengurus wajib dipilih jika jabatan adalah Pengurus.");
+           
+           if (posInput.includes('Koordiv. Web')) divInput = 'WEB';
+           else if (posInput.includes('Koordiv. Mobile')) divInput = 'Mobile';
+           else if (posInput.includes('Koordiv. IoT')) divInput = 'IoT';
+           else if (posInput.includes('Koordiv. SC')) divInput = 'SC';
+           else if (posInput.includes('Koordiv. UI UX')) divInput = 'UI UX';
+           else if (posInput.includes('Kreatif')) divInput = 'Tim Kreatif';
+           else if (posInput.includes('Marketing')) divInput = 'Tim Marketing';
+           else divInput = 'BPH'; // Ketum, Waketum, Sekum, Bendum
+           
            jabInput = `Pengurus - ${posInput}`;
+           jp = 'Pengurus';
+       } else {
+           if (!divInput) throw new Error("Divisi wajib dipilih untuk setiap pesanan.");
+           if (!jp) throw new Error("Jenis PDH wajib dipilih untuk setiap pesanan.");
        }
        
-       if (!divInput) throw new Error("Divisi wajib dipilih untuk setiap pesanan.");
        if (!jabInput) throw new Error("Jabatan wajib dipilih untuk setiap pesanan.");
 
        let itemData = {
