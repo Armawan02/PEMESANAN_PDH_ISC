@@ -22,17 +22,17 @@ function doGet(e) {
         no: i,
         nama: row[0],
         ukuran: row[1],
-        divisi: row[2],
-        jenisPdh: row[3],
-        karya: row[4] || '',
-        validasi: row[5] || '',
-        volume: row[6],
-        buktiTf: row[7],
-        statusBayar: row[8],
-        statusProses: row[9],
-        noWa: row[10],
-        waktu: row[11],
-        jabatan: row[12] || ''
+        jabatan: row[2] || '',
+        divisi: row[3],
+        jenisPdh: row[4],
+        karya: row[5] || '',
+        validasi: row[6] || '',
+        volume: row[7],
+        buktiTf: row[8],
+        statusBayar: row[9],
+        statusProses: row[10],
+        noWa: row[11],
+        waktu: row[12]
       });
     }
     
@@ -130,11 +130,11 @@ function doPost(e) {
        
        sheet.getRange(data.rowId, 1).setValue(data.editData.nama);
        sheet.getRange(data.rowId, 2).setValue(data.editData.ukuran);
-       sheet.getRange(data.rowId, 3).setValue(data.editData.divisi);
-       sheet.getRange(data.rowId, 4).setValue(data.editData.jenisPdh);
-       sheet.getRange(data.rowId, 7).setValue(data.editData.volume);
-       sheet.getRange(data.rowId, 11).setValue("'" + data.editData.noWa);
-       sheet.getRange(data.rowId, 13).setValue(data.editData.jabatan);
+       sheet.getRange(data.rowId, 3).setValue(data.editData.jabatan);
+       sheet.getRange(data.rowId, 4).setValue(data.editData.divisi);
+       sheet.getRange(data.rowId, 5).setValue(data.editData.jenisPdh);
+       sheet.getRange(data.rowId, 8).setValue(data.editData.volume);
+       sheet.getRange(data.rowId, 12).setValue("'" + data.editData.noWa);
        
        return ContentService.createTextOutput(JSON.stringify({ success: true, message: 'Data berhasil diupdate' })).setMimeType(ContentService.MimeType.JSON);
     }
@@ -164,7 +164,7 @@ function doPost(e) {
     const sheet = ss.getSheetByName('Pemesanan') || ss.insertSheet('Pemesanan');
     
     if (sheet.getLastRow() === 0) {
-      sheet.appendRow(['Nama', 'Ukuran', 'Divisi', 'Jenis PDH', 'Syarat Exclusive', 'Status Exclusive', 'volume', 'Bukti Trans', 'Status Bayar', 'Status Produksi', 'Nomor WhatsApp', 'Waktu Pemesanan', 'Jabatan']);
+      sheet.appendRow(['Nama', 'Ukuran', 'Jabatan', 'Divisi', 'Jenis PDH', 'Syarat Exclusive', 'Status Exclusive', 'volume', 'Bukti Transfer', 'Status Bayar', 'Status Produksi', 'Nomor WhatsApp', 'Waktu Pemesanan']);
       sheet.getRange(1, 1, 1, 13).setFontWeight('bold').setBackground('#e0e0e0');
     }
     
@@ -219,6 +219,7 @@ function doPost(e) {
     const rowData = [
       data.nama,
       allUkuran,
+      allJabatan,
       allDivisi,
       allJenisPdh,
       finalKaryaUrl,
@@ -226,10 +227,9 @@ function doPost(e) {
       allVolume,
       fileUrl,
       'Pending', 
-      'Pending',  
-      "'" + data.noWa, 
-      submitDate,
-      allJabatan
+      'Pending',
+      "'" + data.noWa,
+      submitDate
     ];
     
     sheet.appendRow(rowData);
