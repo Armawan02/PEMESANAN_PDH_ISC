@@ -176,9 +176,9 @@ document.getElementById('form-pesanan').addEventListener('submit', async functio
            else if (posInput.includes('Koordiv. UI UX')) divInput = 'UI UX';
            else if (posInput.includes('Kreatif')) divInput = 'Tim Kreatif';
            else if (posInput.includes('Marketing')) divInput = 'Tim Marketing';
-           else divInput = 'BPH'; // Ketum, Waketum, Sekum, Bendum
+           else divInput = '-'; // Kosongkan divisi untuk Ketum, Waketum, Sekum, Bendum
            
-           jabInput = `Pengurus - ${posInput}`;
+           jabInput = posInput; // Set jabatan menjadi posisinya langsung (misal: "Ketua Umum", tanpa embel-embel "Pengurus -")
            jp = 'Pengurus';
        } else {
            if (!divInput) throw new Error("Divisi wajib dipilih untuk setiap pesanan.");
