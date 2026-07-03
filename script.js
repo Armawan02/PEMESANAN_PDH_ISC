@@ -179,7 +179,7 @@ document.getElementById('form-pesanan').addEventListener('submit', async functio
            else divInput = '-'; // Kosongkan divisi untuk Ketum, Waketum, Sekum, Bendum
            
            jabInput = posInput; // Set jabatan menjadi posisinya langsung (misal: "Ketua Umum", tanpa embel-embel "Pengurus -")
-           jp = 'Pengurus';
+           jp = '-'; // Kosongkan Jenis PDH karena pengurus tidak memilih ini
        } else {
            if (!divInput) throw new Error("Divisi wajib dipilih untuk setiap pesanan.");
            if (!jp) throw new Error("Jenis PDH wajib dipilih untuk setiap pesanan.");
