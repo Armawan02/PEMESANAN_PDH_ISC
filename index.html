@@ -371,7 +371,7 @@
         <button id="close-modal" class="btn-close">&times;</button>
       </div>
       <div class="modal-body" style="padding-top: 20px;">
-        <div class="form-group" style="margin-bottom: 20px;">
+        <div class="form-group" id="password-section" style="margin-bottom: 20px;">
           <label for="admin-password">Password Admin</label>
           <div style="position: relative;">
             <input type="password" id="admin-password" placeholder="Masukkan password" style="width: 100%; padding-right: 40px;">
@@ -381,7 +381,16 @@
             </span>
           </div>
         </div>
-        <button id="btn-login" class="btn-primary">LOGIN</button>
+        
+        <div class="form-group" id="otp-section" style="display: none; margin-bottom: 20px;">
+          <label for="admin-otp">Kode OTP (Cek Email)</label>
+          <input type="text" id="admin-otp" placeholder="Masukkan 6 digit angka OTP" style="width: 100%;">
+          <small style="color: #94a3b8; font-size: 11px; margin-top: 5px; display: block;">Kode OTP berlaku 5 menit</small>
+        </div>
+        
+        <button id="btn-login" class="btn-primary">KIRIM OTP</button>
+        <button id="btn-verify-otp" class="btn-primary" style="display: none;">VERIFIKASI & LOGIN</button>
+        
         <div id="login-message" class="message" style="display: none; margin-top: 15px;"></div>
       </div>
     </div>

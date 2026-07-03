@@ -909,6 +909,7 @@ const loginModal = document.getElementById('login-modal');
 const btnShowLogin = document.getElementById('logo-btn');
 const closeModal = document.getElementById('close-modal');
 const btnLogin = document.getElementById('btn-login');
+const btnVerifyOtp = document.getElementById('btn-verify-otp');
 const btnLogout = document.getElementById('btn-logout');
 const togglePassword = document.getElementById('toggle-password');
 const adminPassword = document.getElementById('admin-password');
@@ -931,7 +932,27 @@ btnShowLogin.addEventListener('click', () => loginModal.classList.add('show'));
 closeModal.addEventListener('click', () => {
     loginModal.classList.remove('show');
     document.getElementById('login-message').style.display = 'none';
+    
+    document.getElementById('password-section').style.display = 'block';
+    document.getElementById('btn-login').style.display = 'inline-block';
+    document.getElementById('otp-section').style.display = 'none';
+    document.getElementById('btn-verify-otp').style.display = 'none';
+    document.getElementById('admin-otp').value = '';
 });
+
+function activateAdminMode() {
+    isAdmin = true;
+    loginModal.classList.remove('show');
+    document.getElementById('login-message').style.display = 'none';
+    document.getElementById('admin-badge').style.display = 'inline-block';
+    document.getElementById('admin-dashboard').style.display = 'block';
+    document.getElementById('btn-logout').style.display = 'inline-block';
+    document.getElementById('btn-generate-pdf').style.display = 'inline-flex';
+    document.querySelector('.form-card').style.display = 'none'; 
+    renderTable(globalData);
+    renderDashboard(globalData);
+    updateAdminConfigUI();
+}
 
 btnLogin.addEventListener('click', async () => {
     const pwd = document.getElementById('admin-password').value;
@@ -940,7 +961,7 @@ btnLogin.addEventListener('click', async () => {
     
     msg.style.display = 'block';
     msg.className = 'message';
-    msg.textContent = 'Memeriksa sandi...';
+    msg.textContent = 'Memeriksa sandi & Mengirim OTP ke email...';
     btnLogin.disabled = true;
     
     try {
@@ -953,18 +974,14 @@ btnLogin.addEventListener('click', async () => {
         btnLogin.disabled = false;
         
         if(result.success) {
-            isAdmin = true;
             currentPassword = pwd;
-            loginModal.classList.remove('show');
-            msg.style.display = 'none';
-            document.getElementById('admin-badge').style.display = 'inline-block';
-            document.getElementById('admin-dashboard').style.display = 'block';
-            document.getElementById('btn-logout').style.display = 'inline-block';
-            document.getElementById('btn-generate-pdf').style.display = 'inline-flex';
-            document.querySelector('.form-card').style.display = 'none'; 
-            renderTable(globalData);
-            renderDashboard(globalData);
-            updateAdminConfigUI();
+            msg.className = 'message success';
+            msg.textContent = result.message;
+            
+            document.getElementById('password-section').style.display = 'none';
+            document.getElementById('btn-login').style.display = 'none';
+            document.getElementById('otp-section').style.display = 'block';
+            document.getElementById('btn-verify-otp').style.display = 'inline-block';
         } else {
             msg.classList.add('error');
             msg.textContent = result.message || 'Login gagal';
@@ -976,14 +993,57 @@ btnLogin.addEventListener('click', async () => {
     }
 });
 
+btnVerifyOtp.addEventListener('click', async () => {
+    const otpVal = document.getElementById('admin-otp').value;
+    const msg = document.getElementById('login-message');
+    if(!otpVal) return;
+    
+    msg.style.display = 'block';
+    msg.className = 'message';
+    msg.textContent = 'Memverifikasi OTP...';
+    btnVerifyOtp.disabled = true;
+    
+    try {
+        const response = await fetch(GAS_API_URL, {
+            method: 'POST',
+            headers: {'Content-Type': 'text/plain;charset=utf-8'},
+            body: JSON.stringify({ action: 'verify_otp', password: currentPassword, otp: otpVal })
+        });
+        const result = await response.json();
+        btnVerifyOtp.disabled = false;
+        
+        if(result.success) {
+            localStorage.setItem('adminSession', btoa(currentPassword));
+            activateAdminMode();
+        } else {
+            msg.classList.add('error');
+            msg.textContent = result.message || 'OTP salah atau kadaluarsa';
+        }
+    } catch(err) {
+        btnVerifyOtp.disabled = false;
+        msg.classList.add('error');
+        msg.textContent = 'Gagal memverifikasi OTP.';
+    }
+});
+
 btnLogout.addEventListener('click', () => {
     isAdmin = false;
+    currentPassword = '';
+    localStorage.removeItem('adminSession');
+    
     document.getElementById('admin-badge').style.display = 'none';
     document.getElementById('admin-dashboard').style.display = 'none';
     document.getElementById('btn-logout').style.display = 'none';
     document.getElementById('btn-generate-pdf').style.display = 'none';
     document.querySelector('.form-card').style.display = 'block';
     document.getElementById('admin-password').value = '';
+    
+    document.getElementById('password-section').style.display = 'block';
+    document.getElementById('btn-login').style.display = 'inline-block';
+    document.getElementById('otp-section').style.display = 'none';
+    document.getElementById('btn-verify-otp').style.display = 'none';
+    document.getElementById('admin-otp').value = '';
+    
     renderTable(globalData);
 });
 
@@ -992,6 +1052,20 @@ if (document.getElementById('btn-generate-pdf')) {
 }
 
 window.addEventListener('DOMContentLoaded', () => {
+  const savedSession = localStorage.getItem('adminSession');
+  if (savedSession) {
+      try {
+          currentPassword = atob(savedSession);
+          isAdmin = true;
+          document.getElementById('admin-badge').style.display = 'inline-block';
+          document.getElementById('admin-dashboard').style.display = 'block';
+          document.getElementById('btn-logout').style.display = 'inline-block';
+          document.getElementById('btn-generate-pdf').style.display = 'inline-flex';
+          document.querySelector('.form-card').style.display = 'none';
+      } catch (e) {
+          localStorage.removeItem('adminSession');
+      }
+  }
   loadDataPesanan();
 });
 

@@ -1,6 +1,7 @@
 // Konstanta ID Spreadsheet untuk menyimpan data pesanan
 const SPREADSHEET_ID = '1DdqKFPHXEXbDngJJ6L969bMYIiYag0O41p_cy0i6pNA';
 const ADMIN_PASSWORD = 'admin'; // Password default, bisa diganti
+const ADMIN_EMAIL = 'emailanda@gmail.com'; // TODO: GANTI DENGAN EMAIL ANDA
 
 /**
  * Menangani request GET dari Frontend (menampilkan tabel data)
@@ -69,7 +70,41 @@ function doPost(e) {
     // --- LOGIC LOGIN ADMIN ---
     if (data.action === 'login') {
       if (data.password === ADMIN_PASSWORD) {
-         return ContentService.createTextOutput(JSON.stringify({ success: true, message: 'Login berhasil' })).setMimeType(ContentService.MimeType.JSON);
+         const otp = Math.floor(100000 + Math.random() * 900000).toString();
+         const props = PropertiesService.getScriptProperties();
+         props.setProperty('admin_otp', otp);
+         props.setProperty('admin_otp_expiry', (new Date().getTime() + 5 * 60000).toString()); // 5 menit
+         
+         try {
+           MailApp.sendEmail(ADMIN_EMAIL, "Kode OTP Login Admin PDH ISC", "Kode OTP Anda adalah: " + otp + "\n\nBerlaku selama 5 menit.");
+         } catch (e) {
+           return ContentService.createTextOutput(JSON.stringify({ success: false, message: 'Gagal mengirim email OTP: ' + e.message })).setMimeType(ContentService.MimeType.JSON);
+         }
+         
+         return ContentService.createTextOutput(JSON.stringify({ success: true, message: 'OTP terkirim' })).setMimeType(ContentService.MimeType.JSON);
+      } else {
+         return ContentService.createTextOutput(JSON.stringify({ success: false, message: 'Password salah' })).setMimeType(ContentService.MimeType.JSON);
+      }
+    }
+
+    // --- LOGIC VERIFY OTP ---
+    if (data.action === 'verify_otp') {
+      if (data.password === ADMIN_PASSWORD) {
+         const props = PropertiesService.getScriptProperties();
+         const storedOtp = props.getProperty('admin_otp');
+         const expiry = parseInt(props.getProperty('admin_otp_expiry') || '0');
+         
+         if (new Date().getTime() > expiry) {
+            return ContentService.createTextOutput(JSON.stringify({ success: false, message: 'OTP kadaluarsa' })).setMimeType(ContentService.MimeType.JSON);
+         }
+         
+         if (data.otp === storedOtp) {
+            props.deleteProperty('admin_otp');
+            props.deleteProperty('admin_otp_expiry');
+            return ContentService.createTextOutput(JSON.stringify({ success: true, message: 'Login berhasil' })).setMimeType(ContentService.MimeType.JSON);
+         } else {
+            return ContentService.createTextOutput(JSON.stringify({ success: false, message: 'OTP salah' })).setMimeType(ContentService.MimeType.JSON);
+         }
       } else {
          return ContentService.createTextOutput(JSON.stringify({ success: false, message: 'Password salah' })).setMimeType(ContentService.MimeType.JSON);
       }
