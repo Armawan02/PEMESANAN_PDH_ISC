@@ -573,14 +573,17 @@ function renderTable(data) {
           </td>`;
       }
 
+      const separator = '<hr style="margin: 6px 0; border-color: rgba(255,255,255,0.1);">';
+      const fmt = (val) => (val || '-').toString().split(',').map(s => s.trim()).join(separator);
+
       tr.innerHTML = `
         <td>${item.no}</td>
         <td style="font-weight: 600;">${item.nama}</td>
-        <td>${item.jabatan || '-'}</td>
-        <td style="color: var(--primary); font-weight: bold;">${item.ukuran}</td>
-        <td>${item.divisi || '-'}</td>
-        <td>${item.jenisPdh}</td>
-        <td>${item.volume} Pcs</td>
+        <td>${fmt(item.jabatan)}</td>
+        <td style="color: var(--primary); font-weight: bold;">${fmt(item.ukuran)}</td>
+        <td>${fmt(item.divisi)}</td>
+        <td>${fmt(item.jenisPdh)}</td>
+        <td>${fmt(item.volume)}</td>
         <td style="color: #ef4444; font-weight: bold;">${nominalStr}</td>
         <td>${item.noWa || '-'}</td>
         <td>${buktiTfCell}</td>
