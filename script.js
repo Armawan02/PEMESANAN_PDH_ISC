@@ -583,7 +583,6 @@ function renderTable(data) {
           </td>`;
       }
 
-      const separator = '<hr style="margin: 6px 0; border-color: rgba(255,255,255,0.1);">';
       const fmt = (val) => (val || '-').toString().split(',').map(s => s.trim()).join(separator);
 
       tr.innerHTML = `
