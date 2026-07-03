@@ -31,9 +31,29 @@ function checkExclusive() {
     });
 }
 
+function checkPengurus() {
+    const items = document.querySelectorAll('.pesanan-item');
+    items.forEach(item => {
+        const select = item.querySelector('.jabatan-input');
+        const pengurusGroup = item.querySelector('.pengurus-group-local');
+        const pengurusInput = item.querySelector('.posisi-pengurus-input');
+        
+        if (select.value === 'Pengurus') {
+            pengurusGroup.style.display = 'block';
+            pengurusInput.required = true;
+        } else {
+            pengurusGroup.style.display = 'none';
+            pengurusInput.required = false;
+        }
+    });
+}
+
 document.getElementById('pesanan-container').addEventListener('change', function(e) {
     if (e.target.classList.contains('jenisPdh-input')) {
         checkExclusive();
+    }
+    if (e.target.classList.contains('jabatan-input')) {
+        checkPengurus();
     }
 });
 
@@ -47,6 +67,9 @@ document.getElementById('btn-tambah-pesanan').addEventListener('click', function
     newItem.querySelector('.ukuran-input').value = '';
     newItem.querySelector('.divisi-input').value = '';
     newItem.querySelector('.jabatan-input').value = '';
+    newItem.querySelector('.pengurus-group-local').style.display = 'none';
+    newItem.querySelector('.posisi-pengurus-input').value = '';
+    newItem.querySelector('.posisi-pengurus-input').required = false;
     newItem.querySelector('.volume-input').value = '1';
     newItem.querySelector('.karya-group-local').style.display = 'none';
     newItem.querySelector('.fileKarya-local').value = '';
@@ -62,12 +85,14 @@ document.getElementById('btn-tambah-pesanan').addEventListener('click', function
         delBtn.onclick = function() {
             newItem.remove();
             checkExclusive();
+            checkPengurus();
         };
         newItem.appendChild(delBtn);
     } else {
-        newItem.querySelector('.btn-hapus-pesanan').onclick = function() {
+        delBtn.onclick = function() {
             newItem.remove();
             checkExclusive();
+            checkPengurus();
         };
     }
     
@@ -113,8 +138,14 @@ document.getElementById('form-pesanan').addEventListener('submit', async functio
        const jp = item.querySelector('.jenisPdh-input').value;
        const uk = item.querySelector('.ukuran-input').value;
        const divInput = item.querySelector('.divisi-input').value;
-       const jabInput = item.querySelector('.jabatan-input').value;
+       let jabInput = item.querySelector('.jabatan-input').value;
        const vol = item.querySelector('.volume-input').value;
+       
+       if (jabInput === 'Pengurus') {
+           const posInput = item.querySelector('.posisi-pengurus-input').value;
+           if (!posInput) throw new Error("Posisi pengurus wajib dipilih jika jabatan adalah Pengurus.");
+           jabInput = `Pengurus - ${posInput}`;
+       }
        
        if (!divInput) throw new Error("Divisi wajib dipilih untuk setiap pesanan.");
        if (!jabInput) throw new Error("Jabatan wajib dipilih untuk setiap pesanan.");
