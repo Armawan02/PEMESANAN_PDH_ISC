@@ -84,14 +84,14 @@ function doPost(e) {
        const sheet = ss.getSheetByName('Pemesanan');
        
        if (data.type === 'bayar') {
-          // Kolom ke-9 adalah Status Bayar (I)
-          sheet.getRange(data.rowId, 9).setValue(data.value);
-       } else if (data.type === 'proses') {
-          // Kolom ke-10 adalah Status Produksi (J)
+          // Kolom ke-10 adalah Status Bayar (J)
           sheet.getRange(data.rowId, 10).setValue(data.value);
+       } else if (data.type === 'proses') {
+          // Kolom ke-11 adalah Status Produksi (K)
+          sheet.getRange(data.rowId, 11).setValue(data.value);
        } else if (data.type === 'validasi') {
-          // Kolom ke-6 adalah Status Exclusive (F)
-          sheet.getRange(data.rowId, 6).setValue(data.value);
+          // Kolom ke-7 adalah Status Exclusive (G)
+          sheet.getRange(data.rowId, 7).setValue(data.value);
        }
        return ContentService.createTextOutput(JSON.stringify({ success: true, message: 'Status berhasil diperbarui' })).setMimeType(ContentService.MimeType.JSON);
     }

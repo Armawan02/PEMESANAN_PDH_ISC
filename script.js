@@ -797,12 +797,12 @@ function renderDashboard(data) {
         
         totalOmset += calcNominal;
 
-        if(item.statusBayar.toLowerCase().includes('lunas')) lunas += totalVol;
-        else if(item.statusBayar.toLowerCase().includes('dp')) dp += totalVol;
-        else pending += totalVol;
+        if(item.statusBayar.toLowerCase().includes('lunas')) lunas += 1;
+        else if(item.statusBayar.toLowerCase().includes('dp')) dp += 1;
+        else pending += 1;
 
-        if(item.statusProses.toLowerCase().includes('selesai')) selesai += totalVol;
-        else if(item.statusProses.toLowerCase().includes('proses')) proses += totalVol;
+        if(item.statusProses.toLowerCase().includes('selesai')) selesai += 1;
+        else if(item.statusProses.toLowerCase().includes('proses')) proses += 1;
         
         for (let i = 0; i < ukurans.length; i++) {
             let uk = ukurans[i];
