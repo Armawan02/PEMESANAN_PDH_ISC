@@ -207,8 +207,19 @@ function doPost(e) {
     const sheet = ss.getSheetByName('Pemesanan') || ss.insertSheet('Pemesanan');
     
     if (sheet.getLastRow() === 0) {
-      sheet.appendRow(['Nama', 'Ukuran', 'Jabatan', 'Divisi', 'Jenis PDH', 'Syarat Exclusive', 'Status Exclusive', 'volume', 'Bukti Transfer', 'Status Bayar', 'Status Produksi', 'Nomor WhatsApp', 'Waktu Pemesanan']);
-      sheet.getRange(1, 1, 1, 13).setFontWeight('bold').setBackground('#e0e0e0');
+      sheet.appendRow(['Nama', 'Ukuran', 'Jabatan', 'Divisi', 'Jenis PDH', 'Syarat Exclusive', 'Status Exclusive', 'volume', 'Bukti Transfer', 'Status Bayar', 'Status Produksi', 'Nomor WhatsApp', 'Waktu Pemesanan', 'ID Pesanan']);
+      sheet.getRange(1, 1, 1, 14).setFontWeight('bold').setBackground('#e0e0e0');
+    }
+    
+    // Mencegah duplikasi data berdasarkan orderId
+    if (data.orderId) {
+        const lastRow = sheet.getLastRow();
+        if (lastRow > 1) {
+            const existingIds = sheet.getRange(2, 14, lastRow - 1).getValues().flat();
+            if (existingIds.includes(data.orderId)) {
+                return ContentService.createTextOutput(JSON.stringify({ success: false, message: 'Pesanan ini sudah pernah terkirim sebelumnya (terdeteksi duplikat). Tidak ada data baru yang ditambahkan.' })).setMimeType(ContentService.MimeType.JSON);
+            }
+        }
     }
     
     let fileUrl = '';
@@ -270,7 +281,8 @@ function doPost(e) {
       'Pending', 
       'Pending',
       "'" + data.noWa,
-      submitDate
+      submitDate,
+      data.orderId || ''
     ];
     
     sheet.insertRowAfter(1);

@@ -154,6 +154,7 @@ document.getElementById('form-pesanan').addEventListener('submit', async functio
     
     const formData = {
       action: 'order',
+      orderId: 'ORD-' + Date.now().toString(36).toUpperCase() + '-' + Math.floor(1000 + Math.random() * 9000),
       nama: document.getElementById('nama').value,
       noWa: document.getElementById('noWa').value,
       items: [],
