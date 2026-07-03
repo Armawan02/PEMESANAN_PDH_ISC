@@ -4,6 +4,14 @@ const ADMIN_PASSWORD = 'admin'; // Password default, bisa diganti
 const ADMIN_EMAIL = 'emailanda@gmail.com'; // TODO: GANTI DENGAN EMAIL ANDA
 
 /**
+ * FUNGSI KHUSUS UNTUK MEMANCING IZIN (AUTHORIZATION)
+ * Pilih fungsi ini di dropdown editor lalu klik "Jalankan/Run"
+ */
+function setupPermissions() {
+  MailApp.getRemainingDailyQuota();
+}
+
+/**
  * Menangani request GET dari Frontend (menampilkan tabel data)
  */
 function doGet(e) {
