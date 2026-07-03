@@ -46,6 +46,7 @@ document.getElementById('btn-tambah-pesanan').addEventListener('click', function
     newItem.querySelector('.jenisPdh-input').value = '';
     newItem.querySelector('.ukuran-input').value = '';
     newItem.querySelector('.divisi-input').value = '';
+    newItem.querySelector('.jabatan-input').value = '';
     newItem.querySelector('.volume-input').value = '1';
     newItem.querySelector('.karya-group-local').style.display = 'none';
     newItem.querySelector('.fileKarya-local').value = '';
@@ -112,14 +113,17 @@ document.getElementById('form-pesanan').addEventListener('submit', async functio
        const jp = item.querySelector('.jenisPdh-input').value;
        const uk = item.querySelector('.ukuran-input').value;
        const divInput = item.querySelector('.divisi-input').value;
+       const jabInput = item.querySelector('.jabatan-input').value;
        const vol = item.querySelector('.volume-input').value;
        
        if (!divInput) throw new Error("Divisi wajib dipilih untuk setiap pesanan.");
+       if (!jabInput) throw new Error("Jabatan wajib dipilih untuk setiap pesanan.");
 
        let itemData = {
            jenisPdh: jp,
            ukuran: uk,
            divisi: divInput,
+           jabatan: jabInput,
            volume: vol
        };
        
@@ -491,9 +495,11 @@ function renderTable(data) {
           const safeJenis = item.jenisPdh ? item.jenisPdh.replace(/'/g, "\\'") : '';
           const safeVolume = item.volume ? String(item.volume).replace(/'/g, "\\'") : '';
           
+          const safeJabatan = item.jabatan ? item.jabatan.replace(/'/g, "\\'") : '';
+          
           aksiCell = `<td class="col-aksi">
               <div style="display: flex; gap: 5px;">
-                 <button type="button" class="btn-sm" style="background: rgba(59, 130, 246, 0.1); border-color: rgba(59, 130, 246, 0.3); color: #3b82f6;" onclick="openEditModal(${item.rowId}, '${safeNama}', '${safeNowa}', '${safeDivisi}', '${safeUkuran}', '${safeJenis}', '${safeVolume}')">Edit</button>
+                 <button type="button" class="btn-sm" style="background: rgba(59, 130, 246, 0.1); border-color: rgba(59, 130, 246, 0.3); color: #3b82f6;" onclick="openEditModal(${item.rowId}, '${safeNama}', '${safeNowa}', '${safeDivisi}', '${safeUkuran}', '${safeJenis}', '${safeVolume}', '${safeJabatan}')">Edit</button>
                  <button type="button" class="btn-sm" style="background: rgba(239, 68, 68, 0.1); border-color: rgba(239, 68, 68, 0.3); color: #ef4444;" onclick="deleteOrder(${item.rowId})">Hapus</button>
               </div>
           </td>`;
@@ -502,6 +508,7 @@ function renderTable(data) {
       tr.innerHTML = `
         <td>${item.no}</td>
         <td style="font-weight: 600;">${item.nama}</td>
+        <td>${item.jabatan || '-'}</td>
         <td style="color: var(--primary); font-weight: bold;">${item.ukuran}</td>
         <td>${item.divisi || '-'}</td>
         <td>${item.jenisPdh}</td>
@@ -525,7 +532,7 @@ function deleteOrder(rowId) {
     performAdminAction('delete_order', { rowId });
 }
 
-function openEditModal(rowId, nama, noWa, divisi, ukuran, jenisPdh, volume) {
+function openEditModal(rowId, nama, noWa, divisi, ukuran, jenisPdh, volume, jabatan) {
     document.getElementById('edit-rowId').value = rowId;
     document.getElementById('edit-nama').value = nama;
     document.getElementById('edit-noWa').value = noWa;
@@ -533,22 +540,29 @@ function openEditModal(rowId, nama, noWa, divisi, ukuran, jenisPdh, volume) {
     document.getElementById('edit-ukuran').value = ukuran;
     document.getElementById('edit-jenisPdh').value = jenisPdh;
     document.getElementById('edit-volume').value = volume;
+    document.getElementById('edit-jabatan').value = jabatan || '';
     document.getElementById('edit-modal').style.display = 'flex';
 }
 
 async function saveEditOrder() {
-    const data = {
-        rowId: document.getElementById('edit-rowId').value,
+    const editData = {
         nama: document.getElementById('edit-nama').value,
         noWa: document.getElementById('edit-noWa').value,
         divisi: document.getElementById('edit-divisi').value,
         ukuran: document.getElementById('edit-ukuran').value,
         jenisPdh: document.getElementById('edit-jenisPdh').value,
-        volume: document.getElementById('edit-volume').value
+        volume: document.getElementById('edit-volume').value,
+        jabatan: document.getElementById('edit-jabatan').value
     };
-    await performAdminAction('edit_order', data);
+    const rowId = document.getElementById('edit-rowId').value;
+    await performAdminAction('edit_order', { editData: editData, rowId: rowId });
     document.getElementById('edit-modal').style.display = 'none';
 }
+
+document.getElementById('close-edit-modal').addEventListener('click', () => {
+    document.getElementById('edit-modal').style.display = 'none';
+});
+document.getElementById('btn-save-edit').addEventListener('click', saveEditOrder);
 
 async function performAdminAction(action, payload) {
     try {
@@ -611,13 +625,14 @@ function generatePDF() {
     doc.text(`Status Pembayaran - Lunas: ${totalLunas} | DP: ${totalDP}`, 14, 31);
     doc.text(`Estimasi Omset: Rp ${omset.toLocaleString('id-ID')}`, 14, 37);
     
-    const tableColumn = ["No", "Nama", "Divisi", "Ukuran", "Jenis PDH", "Vol", "Status Bayar", "Validasi Exclusive"];
+    const tableColumn = ["No", "Nama", "Jabatan", "Divisi", "Ukuran", "Jenis PDH", "Vol", "Status Bayar", "Validasi Exclusive"];
     const tableRows = [];
     
     globalData.forEach((item, index) => {
         tableRows.push([
             index + 1,
             item.nama,
+            item.jabatan || '-',
             item.divisi || '-',
             item.ukuran,
             item.jenisPdh,
@@ -867,3 +882,24 @@ if (document.getElementById('btn-generate-pdf')) {
 window.addEventListener('DOMContentLoaded', () => {
   loadDataPesanan();
 });
+
+// Fungsi untuk menyalin rekening
+window.salinRekening = function(btn) {
+    const rekening = "503501047215535";
+    navigator.clipboard.writeText(rekening).then(() => {
+        // Ganti icon jadi centang hijau sebentar
+        const originalHTML = btn.innerHTML;
+        btn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>';
+        btn.style.borderColor = "rgba(16, 185, 129, 0.3)";
+        btn.style.background = "rgba(16, 185, 129, 0.1)";
+        
+        setTimeout(() => {
+            btn.innerHTML = originalHTML;
+            btn.style.borderColor = "rgba(77, 166, 255, 0.3)";
+            btn.style.background = "rgba(77, 166, 255, 0.1)";
+        }, 2000);
+    }).catch(err => {
+        console.error('Gagal menyalin:', err);
+        alert('Gagal menyalin nomor rekening!');
+    });
+};

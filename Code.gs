@@ -31,7 +31,8 @@ function doGet(e) {
         statusBayar: row[8],
         statusProses: row[9],
         noWa: row[10],
-        waktu: row[11]
+        waktu: row[11],
+        jabatan: row[12] || ''
       });
     }
     
@@ -133,6 +134,7 @@ function doPost(e) {
        sheet.getRange(data.rowId, 4).setValue(data.editData.jenisPdh);
        sheet.getRange(data.rowId, 7).setValue(data.editData.volume);
        sheet.getRange(data.rowId, 11).setValue("'" + data.editData.noWa);
+       sheet.getRange(data.rowId, 13).setValue(data.editData.jabatan);
        
        return ContentService.createTextOutput(JSON.stringify({ success: true, message: 'Data berhasil diupdate' })).setMimeType(ContentService.MimeType.JSON);
     }
@@ -162,8 +164,8 @@ function doPost(e) {
     const sheet = ss.getSheetByName('Pemesanan') || ss.insertSheet('Pemesanan');
     
     if (sheet.getLastRow() === 0) {
-      sheet.appendRow(['Nama', 'Ukuran', 'Divisi', 'Jenis PDH', 'Syarat Exclusive', 'Status Exclusive', 'volume', 'Bukti Trans', 'Status Bayar', 'Status Produksi', 'Nomor WhatsApp', 'Waktu Pemesanan']);
-      sheet.getRange(1, 1, 1, 12).setFontWeight('bold').setBackground('#e0e0e0');
+      sheet.appendRow(['Nama', 'Ukuran', 'Divisi', 'Jenis PDH', 'Syarat Exclusive', 'Status Exclusive', 'volume', 'Bukti Trans', 'Status Bayar', 'Status Produksi', 'Nomor WhatsApp', 'Waktu Pemesanan', 'Jabatan']);
+      sheet.getRange(1, 1, 1, 13).setFontWeight('bold').setBackground('#e0e0e0');
     }
     
     let fileUrl = '';
@@ -209,6 +211,7 @@ function doPost(e) {
     let allJenisPdh = data.items.map(item => item.jenisPdh).join(', ');
     let allVolume = data.items.map(item => item.volume).join(', ');
     let allDivisi = data.items.map(item => item.divisi || '-').join(', ');
+    let allJabatan = data.items.map(item => item.jabatan || '-').join(', ');
     
     let finalStatusValidasi = hasExclusive ? 'Menunggu' : '';
     let finalKaryaUrl = karyaUrls.join(', ');
@@ -225,7 +228,8 @@ function doPost(e) {
       'Pending', 
       'Pending',  
       "'" + data.noWa, 
-      submitDate
+      submitDate,
+      allJabatan
     ];
     
     sheet.appendRow(rowData);
