@@ -35,6 +35,7 @@ function checkPengurus() {
     const items = document.querySelectorAll('.pesanan-item');
     items.forEach(item => {
         const select = item.querySelector('.jabatan-input');
+        const jabatan = select.value;
         const pengurusGroup = item.querySelector('.pengurus-group-local');
         const pengurusInput = item.querySelector('.posisi-pengurus-input');
         
@@ -44,24 +45,28 @@ function checkPengurus() {
         const divisiGroup = item.querySelector('.divisi-input').closest('.form-group');
         const divisiInput = item.querySelector('.divisi-input');
         
-        if (select.value === 'Pengurus') {
+        pengurusGroup.style.display = 'none';
+        pengurusInput.required = false;
+        jenisPdhGroup.style.display = 'block';
+        jenisPdhInput.required = true;
+        divisiGroup.style.display = 'block';
+        divisiInput.required = true;
+        
+        if (jabatan === 'Pengurus') {
             pengurusGroup.style.display = 'block';
             pengurusInput.required = true;
-            
             jenisPdhGroup.style.display = 'none';
             jenisPdhInput.required = false;
-            
             divisiGroup.style.display = 'none';
             divisiInput.required = false;
-        } else {
-            pengurusGroup.style.display = 'none';
-            pengurusInput.required = false;
-            
-            jenisPdhGroup.style.display = 'block';
-            jenisPdhInput.required = true;
-            
-            divisiGroup.style.display = 'block';
-            divisiInput.required = true;
+        } else if (jabatan === 'Pembina') {
+            jenisPdhGroup.style.display = 'none';
+            jenisPdhInput.required = false;
+            divisiGroup.style.display = 'none';
+            divisiInput.required = false;
+        } else if (jabatan === 'Pembimbing') {
+            jenisPdhGroup.style.display = 'none';
+            jenisPdhInput.required = false;
         }
     });
 }
@@ -180,6 +185,12 @@ document.getElementById('form-pesanan').addEventListener('submit', async functio
            
            jabInput = posInput; // Set jabatan menjadi posisinya langsung (misal: "Ketua Umum", tanpa embel-embel "Pengurus -")
            jp = '-'; // Kosongkan Jenis PDH karena pengurus tidak memilih ini
+       } else if (jabInput === 'Pembina') {
+           jp = '-';
+           divInput = '-';
+       } else if (jabInput === 'Pembimbing') {
+           jp = '-';
+           if (!divInput) throw new Error("Divisi wajib dipilih untuk setiap pesanan.");
        } else {
            if (!divInput) throw new Error("Divisi wajib dipilih untuk setiap pesanan.");
            if (!jp) throw new Error("Jenis PDH wajib dipilih untuk setiap pesanan.");
