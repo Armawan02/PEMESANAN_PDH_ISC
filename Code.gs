@@ -174,9 +174,8 @@ function doPost(e) {
       const base64Data = splitBase[1];
       const blob = Utilities.newBlob(Utilities.base64Decode(base64Data), data.mimeType, data.fileName);
       
-      const folderName = "Bukti Transfer PDH";
-      const folders = DriveApp.getFoldersByName(folderName);
-      let folder = folders.hasNext() ? folders.next() : DriveApp.createFolder(folderName);
+      const folderIdBukti = '1Aq1Kfx1Stn7phOGGB6FU_4xe8x9A4n0q';
+      let folder = DriveApp.getFolderById(folderIdBukti);
       
       const file = folder.createFile(blob);
       file.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW);
@@ -194,9 +193,8 @@ function doPost(e) {
                 const base64DataKarya = splitBaseKarya[1];
                 const blobKarya = Utilities.newBlob(Utilities.base64Decode(base64DataKarya), item.karyaMimeType, item.karyaFileName);
                 
-                const folderNameKarya = "Dokumen Pendukung PDH Exclusive";
-                const foldersKarya = DriveApp.getFoldersByName(folderNameKarya);
-                let folderKarya = foldersKarya.hasNext() ? foldersKarya.next() : DriveApp.createFolder(folderNameKarya);
+                const folderIdKarya = '1MTVb_7LlE3GxbSyMqsg5GP3iN2qJwAHR';
+                let folderKarya = DriveApp.getFolderById(folderIdKarya);
                 
                 const fileKarya = folderKarya.createFile(blobKarya);
                 fileKarya.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW);
