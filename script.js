@@ -91,7 +91,7 @@ function updatePesananLabels() {
     items.forEach((item, index) => {
         const label = item.querySelector('.pesanan-label');
         if (label) {
-            label.textContent = `Pesanan Ke-${index + 1}`;
+            label.textContent = `Order ${index + 1}`;
         }
     });
 }
