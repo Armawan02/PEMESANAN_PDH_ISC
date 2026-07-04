@@ -57,18 +57,25 @@ function checkPengurus() {
             pengurusInput.required = true;
             jenisPdhGroup.style.display = 'none';
             jenisPdhInput.required = false;
+            jenisPdhInput.value = '';
             divisiGroup.style.display = 'none';
             divisiInput.required = false;
+            divisiInput.value = '';
         } else if (jabatan === 'Pembina') {
             jenisPdhGroup.style.display = 'none';
             jenisPdhInput.required = false;
+            jenisPdhInput.value = '';
             divisiGroup.style.display = 'none';
             divisiInput.required = false;
+            divisiInput.value = '';
         } else if (jabatan === 'Pembimbing') {
             jenisPdhGroup.style.display = 'none';
             jenisPdhInput.required = false;
+            jenisPdhInput.value = '';
         }
     });
+    
+    checkExclusive();
 }
 
 document.getElementById('pesanan-container').addEventListener('change', function(e) {
@@ -79,6 +86,15 @@ document.getElementById('pesanan-container').addEventListener('change', function
         checkPengurus();
     }
 });
+function updatePesananLabels() {
+    const items = document.querySelectorAll('.pesanan-item');
+    items.forEach((item, index) => {
+        const label = item.querySelector('.pesanan-label');
+        if (label) {
+            label.textContent = `Pesanan Ke-${index + 1}`;
+        }
+    });
+}
 
 document.getElementById('btn-tambah-pesanan').addEventListener('click', function() {
     const container = document.getElementById('pesanan-container');
@@ -115,6 +131,7 @@ document.getElementById('btn-tambah-pesanan').addEventListener('click', function
             newItem.remove();
             checkExclusive();
             checkPengurus();
+            updatePesananLabels();
         };
         newItem.appendChild(delBtn);
     } else {
@@ -122,10 +139,12 @@ document.getElementById('btn-tambah-pesanan').addEventListener('click', function
             newItem.remove();
             checkExclusive();
             checkPengurus();
+            updatePesananLabels();
         };
     }
     
     container.appendChild(newItem);
+    updatePesananLabels();
 });
 
 document.getElementById('form-pesanan').addEventListener('submit', async function(event) {
