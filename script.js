@@ -176,13 +176,11 @@ document.getElementById('form-pesanan').addEventListener('submit', async functio
            if (!posInput) throw new Error("Posisi pengurus wajib dipilih jika jabatan adalah Pengurus.");
            
            if (posInput.includes('KADEP')) divInput = '-';
-           else if (posInput.includes('Koordiv. Web')) divInput = 'WEB';
-           else if (posInput.includes('Koordiv. Mobile')) divInput = 'Mobile';
-           else if (posInput.includes('Koordiv. IoT')) divInput = 'IoT';
-           else if (posInput.includes('Koordiv. SC')) divInput = 'SC';
-           else if (posInput.includes('Koordiv. UI UX')) divInput = 'UI UX';
-           else if (posInput.includes('Kreatif')) divInput = 'Tim Kreatif';
-           else if (posInput.includes('Marketing')) divInput = 'Tim Marketing';
+           else if (posInput.includes('KOORDIV. WEB')) divInput = 'WEB';
+           else if (posInput.includes('KOORDIV. MOBILE')) divInput = 'Mobile';
+           else if (posInput.includes('KOORDIV. IOT')) divInput = 'IoT';
+           else if (posInput.includes('KOORDIV. SC')) divInput = 'SC';
+           else if (posInput.includes('KOORDIV. UI UX')) divInput = 'UI UX';
            else divInput = '-'; // Kosongkan divisi untuk Ketum, Waketum, Sekum, Bendum dan KADEP
            
            jabInput = posInput; // Set jabatan menjadi posisinya langsung (misal: "Ketua Umum", tanpa embel-embel "Pengurus -")
