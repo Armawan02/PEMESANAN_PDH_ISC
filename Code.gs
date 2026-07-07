@@ -285,8 +285,7 @@ function doPost(e) {
       data.orderId || ''
     ];
     
-    sheet.insertRowAfter(1);
-    sheet.getRange(2, 1, 1, rowData.length).setValues([rowData]);
+    sheet.appendRow(rowData);
     
     return ContentService.createTextOutput(JSON.stringify({ success: true, message: 'Pesanan berhasil dikirim!' }))
       .setMimeType(ContentService.MimeType.JSON);

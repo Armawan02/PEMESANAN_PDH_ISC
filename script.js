@@ -968,6 +968,8 @@ function activateAdminMode() {
     document.getElementById('btn-logout').style.display = 'inline-block';
     document.getElementById('btn-generate-pdf').style.display = 'inline-flex';
     document.querySelector('.form-card').style.display = 'none'; 
+    document.getElementById('admin-section').after(document.querySelector('.grid-container'));
+    
     renderTable(globalData);
     renderDashboard(globalData);
     updateAdminConfigUI();
@@ -1055,6 +1057,7 @@ btnLogout.addEventListener('click', () => {
     document.getElementById('btn-logout').style.display = 'none';
     document.getElementById('btn-generate-pdf').style.display = 'none';
     document.querySelector('.form-card').style.display = 'block';
+    document.querySelector('.form-card').before(document.querySelector('.grid-container'));
     document.getElementById('admin-password').value = '';
     
     document.getElementById('password-section').style.display = 'block';
@@ -1081,6 +1084,7 @@ window.addEventListener('DOMContentLoaded', () => {
           document.getElementById('btn-logout').style.display = 'inline-block';
           document.getElementById('btn-generate-pdf').style.display = 'inline-flex';
           document.querySelector('.form-card').style.display = 'none';
+          document.getElementById('admin-section').after(document.querySelector('.grid-container'));
       } catch (e) {
           localStorage.removeItem('adminSession');
       }
