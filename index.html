@@ -114,10 +114,13 @@
         <div id="pesanan-standard-container">
           <div class="pesanan-item standard" style="display: block; border: 1px solid rgba(255,255,255,0.1); padding: 15px; border-radius: 8px; margin-bottom: 15px; background: rgba(0,0,0,0.1);">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; border-bottom: 1px dashed rgba(59, 130, 246, 0.3); padding-bottom: 10px;">
-              <div>
-                <h4 class="pesanan-label" style="margin: 0; color: #3b82f6; font-size: 16px; font-weight: 600; display: inline-block;">Form PDH Standard</h4>
-                <span style="font-size: 13px; color: #94a3b8; font-style: italic; margin-left: 8px;">(Abaikan form ini jika tidak dipesan)</span>
+              <div style="flex-grow: 1;">
+                <h4 class="pesanan-label" style="margin: 0; color: #3b82f6; font-size: 16px; font-weight: 600;">Form PDH Standard</h4>
+                <div style="margin-top: 8px;">
+                  <span style="font-size: 13px; color: #ef4444; font-weight: bold; background: rgba(239, 68, 68, 0.15); border: 1px dashed rgba(239, 68, 68, 0.4); padding: 4px 8px; border-radius: 6px; display: inline-block;">(*Abaikan form ini jika tidak dipesan)</span>
+                </div>
               </div>
+              <button type="button" class="btn-reset-form" style="background: rgba(239, 68, 68, 0.1); color: #ef4444; border: 1px dashed rgba(239, 68, 68, 0.5); padding: 8px 18px; border-radius: 6px; font-size: 13px; font-weight: bold; cursor: pointer; transition: all 0.3s ease; white-space: nowrap; margin-left: 15px;">Kosongkan Form</button>
             </div>
             <input type="hidden" class="jenisPdh-input" value="Standard">
             <div class="form-row">
@@ -190,10 +193,13 @@
         <div id="pesanan-exclusive-container">
           <div class="pesanan-item exclusive" style="display: block; border: 1px solid rgba(255,255,255,0.1); padding: 15px; border-radius: 8px; margin-bottom: 15px; background: rgba(0,0,0,0.1);">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; border-bottom: 1px dashed rgba(16, 185, 129, 0.3); padding-bottom: 10px;">
-              <div>
-                <h4 class="pesanan-label" style="margin: 0; color: #10b981; font-size: 16px; font-weight: 600; display: inline-block;">Form PDH Exclusive</h4>
-                <span style="font-size: 13px; color: #94a3b8; font-style: italic; margin-left: 8px;">(Abaikan form ini jika tidak dipesan)</span>
+              <div style="flex-grow: 1;">
+                <h4 class="pesanan-label" style="margin: 0; color: #10b981; font-size: 16px; font-weight: 600;">Form PDH Exclusive</h4>
+                <div style="margin-top: 8px;">
+                  <span style="font-size: 13px; color: #ef4444; font-weight: bold; background: rgba(239, 68, 68, 0.15); border: 1px dashed rgba(239, 68, 68, 0.4); padding: 4px 8px; border-radius: 6px; display: inline-block;">(*Abaikan form ini jika tidak dipesan)</span>
+                </div>
               </div>
+              <button type="button" class="btn-reset-form" style="background: rgba(239, 68, 68, 0.1); color: #ef4444; border: 1px dashed rgba(239, 68, 68, 0.5); padding: 8px 18px; border-radius: 6px; font-size: 13px; font-weight: bold; cursor: pointer; transition: all 0.3s ease; white-space: nowrap; margin-left: 15px;">Kosongkan Form</button>
             </div>
             <input type="hidden" class="jenisPdh-input" value="Exclusive">
             <div class="form-row">

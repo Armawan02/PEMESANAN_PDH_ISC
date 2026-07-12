@@ -22,19 +22,24 @@ function checkPengurus() {
         const pengurusGroup = item.querySelector('.pengurus-group-local');
         const divisiGroup = item.querySelector('.divisi-group');
         const jenisPdhInput = item.querySelector('.jenisPdh-input');
+        const karyaGroup = item.querySelector('.karya-group-local');
         
         pengurusGroup.style.display = 'none';
         divisiGroup.style.display = 'block';
+        if (karyaGroup) karyaGroup.style.display = 'block';
         
         if (jabatan === 'Pengurus') {
             pengurusGroup.style.display = 'block';
             jenisPdhInput.value = '-';
             divisiGroup.style.display = 'none';
+            if (karyaGroup) karyaGroup.style.display = 'none';
         } else if (jabatan === 'Pembina') {
             jenisPdhInput.value = '-';
             divisiGroup.style.display = 'none';
+            if (karyaGroup) karyaGroup.style.display = 'none';
         } else if (jabatan === 'Pembimbing') {
             jenisPdhInput.value = '-';
+            if (karyaGroup) karyaGroup.style.display = 'none';
         } else {
             // Restore proper jenisPdh value if changed back to Anggota
             if (item.classList.contains('exclusive')) {
@@ -387,12 +392,20 @@ document.getElementById('form-pesanan').addEventListener('submit', async functio
        };
        
        if (jp === 'Exclusive') {
-           if (!fileKarya) throw new Error(`Dokumen Pendukung wajib diunggah untuk PDH ${jp}.`);
-           if (fileKarya.size > 5 * 1024 * 1024) throw new Error("Ukuran file dokumen terlalu besar. Maksimal 5MB.");
-           
-           itemData.karyaBase64 = await getBase64(fileKarya);
-           itemData.karyaFileName = fileKarya.name;
-           itemData.karyaMimeType = fileKarya.type;
+            // Jika jabatan Anggota, maka dokumen pendukung WAJIB
+            if (jabInput === 'Anggota') {
+                if (!fileKarya) throw new Error(`Dokumen Pendukung wajib diunggah untuk Anggota pada PDH ${jp}.`);
+                if (fileKarya.size > 5 * 1024 * 1024) throw new Error("Ukuran file dokumen terlalu besar. Maksimal 5MB.");
+                
+                itemData.karyaBase64 = await getBase64(fileKarya);
+                itemData.karyaFileName = fileKarya.name;
+                itemData.karyaMimeType = fileKarya.type;
+            } else {
+                // Untuk Pembina/Pembimbing, tidak ada upload dokumen (kosong)
+                itemData.karyaBase64 = "";
+                itemData.karyaFileName = "";
+                itemData.karyaMimeType = "";
+            }
        }
        
        formData.items.push(itemData);
@@ -1326,8 +1339,31 @@ function calculateGrandTotal() {
 document.getElementById('form-pesanan').addEventListener('change', calculateGrandTotal);
 document.getElementById('form-pesanan').addEventListener('input', calculateGrandTotal);
 document.addEventListener('click', function(e) {
-    if (e.target && e.target.classList.contains('btn-hapus-pesanan')) {
-        setTimeout(calculateGrandTotal, 100);
+    if (e.target && e.target.classList.contains('btn-reset-form')) {
+        const item = e.target.closest('.pesanan-item');
+        if (item) {
+            const jab = item.querySelector('.jabatan-input');
+            const pos = item.querySelector('.posisi-pengurus-input');
+            const divInput = item.querySelector('.divisi-input');
+            const uk = item.querySelector('.ukuran-input');
+            const vol = item.querySelector('.volume-input');
+            const file = item.querySelector('.fileKarya-local');
+            
+            if (jab) jab.value = "";
+            if (pos) pos.value = "";
+            if (divInput) divInput.value = "";
+            if (uk) uk.value = "";
+            if (vol) vol.value = "1";
+            if (file) file.value = "";
+            
+            // Reset visibility of dynamic groups
+            const pengurusGroup = item.querySelector('.pengurus-group-local');
+            const divisiGroup = item.querySelector('.divisi-group');
+            if (pengurusGroup) pengurusGroup.style.display = 'none';
+            if (divisiGroup) divisiGroup.style.display = 'block';
+            
+            setTimeout(calculateGrandTotal, 100);
+        }
     }
 });
 document.addEventListener('DOMContentLoaded', calculateGrandTotal);
