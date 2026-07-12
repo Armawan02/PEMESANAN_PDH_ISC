@@ -323,6 +323,55 @@ document.getElementById('form-pesanan').addEventListener('submit', async functio
 
     const allItems = document.querySelectorAll('.pesanan-item');
     
+    // --- VALIDASI LINTAS FORM (KONSISTENSI JABATAN) ---
+    let jabStd = "";
+    let jabExc = "";
+    
+    for (let item of allItems) {
+        let jp = item.querySelector('.jenisPdh-input').value;
+        let jabInput = item.querySelector('.jabatan-input').value;
+        const uk = item.querySelector('.ukuran-input').value;
+        let divInput = item.querySelector('.divisi-input').value;
+        
+        const isJabEmpty = (!jabInput || jabInput === '' || jabInput.includes('Pilih'));
+        const isUkEmpty = (!uk || uk === '' || uk.includes('Pilih'));
+        const isDivEmpty = (!divInput || divInput === '' || divInput.includes('Pilih'));
+        const isHidden = item.style.display === 'none' || item.offsetParent === null;
+
+        let fileKarya = null;
+        let isFileEmpty = true;
+        if (jp === 'Exclusive') {
+            fileKarya = item.querySelector('.fileKarya-local').files[0];
+            if (fileKarya) isFileEmpty = false;
+        }
+
+        const isFormUntouched = isJabEmpty && isUkEmpty && isDivEmpty && isFileEmpty;
+        
+        if (!isHidden && !isFormUntouched && !isJabEmpty) {
+            if (item.classList.contains('standard')) jabStd = jabInput;
+            if (item.classList.contains('exclusive')) jabExc = jabInput;
+        }
+    }
+    
+    if (jabStd !== "" && jabExc !== "") {
+        if ((jabStd === 'Anggota' || jabStd === 'Pengurus') && jabExc === 'Pembina') {
+            throw new Error("Jabatan Anda bukan Pembina. Silakan sesuaikan pilihan jabatan di kedua form.");
+        }
+        if ((jabStd === 'Anggota' || jabStd === 'Pengurus') && jabExc === 'Pembimbing') {
+            throw new Error("Jabatan Anda bukan Pembimbing. Silakan sesuaikan pilihan jabatan di kedua form.");
+        }
+        if ((jabStd === 'Pembina' || jabStd === 'Pembimbing') && jabExc === 'Anggota') {
+            throw new Error("Jabatan Anda bukan Anggota. Silakan sesuaikan pilihan jabatan di kedua form.");
+        }
+        if (jabStd === 'Pembina' && jabExc === 'Pembimbing') {
+            throw new Error("Jabatan Anda bukan Pembimbing. Silakan sesuaikan pilihan jabatan di kedua form.");
+        }
+        if (jabStd === 'Pembimbing' && jabExc === 'Pembina') {
+            throw new Error("Jabatan Anda bukan Pembina. Silakan sesuaikan pilihan jabatan di kedua form.");
+        }
+    }
+    // ------------------------------------------------
+    
     for (let item of allItems) {
        let jp = item.querySelector('.jenisPdh-input').value;
        const uk = item.querySelector('.ukuran-input').value;
