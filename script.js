@@ -20,29 +20,19 @@ function checkPengurus() {
         const select = item.querySelector('.jabatan-input');
         const jabatan = select.value;
         const pengurusGroup = item.querySelector('.pengurus-group-local');
-        const pengurusInput = item.querySelector('.posisi-pengurus-input');
-        
         const divisiGroup = item.querySelector('.divisi-group');
-        const divisiInput = item.querySelector('.divisi-input');
         const jenisPdhInput = item.querySelector('.jenisPdh-input');
         
         pengurusGroup.style.display = 'none';
-        pengurusInput.required = false;
         divisiGroup.style.display = 'block';
-        divisiInput.required = true;
         
         if (jabatan === 'Pengurus') {
             pengurusGroup.style.display = 'block';
-            pengurusInput.required = true;
             jenisPdhInput.value = '-';
             divisiGroup.style.display = 'none';
-            divisiInput.required = false;
-            divisiInput.value = '';
         } else if (jabatan === 'Pembina') {
             jenisPdhInput.value = '-';
             divisiGroup.style.display = 'none';
-            divisiInput.required = false;
-            divisiInput.value = '';
         } else if (jabatan === 'Pembimbing') {
             jenisPdhInput.value = '-';
         } else {
@@ -351,36 +341,35 @@ document.getElementById('form-pesanan').addEventListener('submit', async functio
            continue;
        }
        
-       // VALIDASI: Peringatan jika form diisi setengah-setengah
-       if (isJabEmpty) throw new Error("Jabatan wajib dipilih untuk setiap pesanan yang diisi.");
-       if (isUkEmpty) throw new Error("Ukuran wajib dipilih untuk setiap pesanan yang diisi.");
+       // VALIDASI DIHAPUS SESUAI PERMINTAAN (Agar tidak ada kendala)
+       // Jika jabatan atau ukuran kosong, tidak akan error merah, tapi akan dikirim apa adanya atau dilewati jika kosong total.
        
        const vol = item.querySelector('.volume-input').value;
        
        if (jabInput === 'Pengurus') {
            const posInput = item.querySelector('.posisi-pengurus-input').value;
            if (!posInput || posInput.includes('Pilih')) {
-               throw new Error("Posisi pengurus wajib dipilih jika jabatan adalah Pengurus.");
+               // Tetap kirim meski posisi belum dipilih (fallback)
+               jabInput = 'Pengurus (Posisi Kosong)';
+           } else {
+               if (posInput.includes('KADEP')) divInput = '-';
+               else if (posInput.includes('KOORDIV. WEB')) divInput = 'WEB';
+               else if (posInput.includes('KOORDIV. MOBILE')) divInput = 'Mobile';
+               else if (posInput.includes('KOORDIV. IOT')) divInput = 'IoT';
+               else if (posInput.includes('KOORDIV. SC')) divInput = 'SC';
+               else if (posInput.includes('KOORDIV. UI UX')) divInput = 'UI UX';
+               else divInput = '-'; 
+               jabInput = posInput;
            }
-           
-           if (posInput.includes('KADEP')) divInput = '-';
-           else if (posInput.includes('KOORDIV. WEB')) divInput = 'WEB';
-           else if (posInput.includes('KOORDIV. MOBILE')) divInput = 'Mobile';
-           else if (posInput.includes('KOORDIV. IOT')) divInput = 'IoT';
-           else if (posInput.includes('KOORDIV. SC')) divInput = 'SC';
-           else if (posInput.includes('KOORDIV. UI UX')) divInput = 'UI UX';
-           else divInput = '-'; // Kosongkan divisi untuk Ketum, Waketum, Sekum, Bendum dan KADEP
-           
-           jabInput = posInput; // Set jabatan menjadi posisinya langsung (misal: "Ketua Umum", tanpa embel-embel "Pengurus -")
-           jp = '-'; // Kosongkan Jenis PDH karena pengurus tidak memilih ini
+           jp = '-';
        } else if (jabInput === 'Pembina') {
            jp = '-';
            divInput = '-';
        } else if (jabInput === 'Pembimbing') {
            jp = '-';
-           if (!divInput) throw new Error("Divisi wajib dipilih untuk setiap pesanan yang diisi.");
+           if (!divInput || divInput.includes('Pilih')) divInput = 'Tidak Diisi';
        } else {
-           if (!divInput) throw new Error("Divisi wajib dipilih untuk setiap pesanan yang diisi.");
+           if (!divInput || divInput.includes('Pilih')) divInput = 'Tidak Diisi';
        }
        
        let itemData = {
@@ -392,12 +381,14 @@ document.getElementById('form-pesanan').addEventListener('submit', async functio
        };
        
        if (jp === 'Exclusive') {
-           if (!fileKarya) throw new Error("Dokumen Pendukung wajib diunggah untuk tipe Exclusive.");
-           if (fileKarya.size > 5 * 1024 * 1024) throw new Error("Ukuran file dokumen terlalu besar. Maksimal 5MB.");
-           
-           itemData.karyaBase64 = await getBase64(fileKarya);
-           itemData.karyaFileName = fileKarya.name;
-           itemData.karyaMimeType = fileKarya.type;
+           // Jika tidak upload dokumen, izinkan saja berlalu
+           if (fileKarya) {
+               if (fileKarya.size > 5 * 1024 * 1024) throw new Error("Ukuran file dokumen terlalu besar. Maksimal 5MB.");
+               
+               itemData.karyaBase64 = await getBase64(fileKarya);
+               itemData.karyaFileName = fileKarya.name;
+               itemData.karyaMimeType = fileKarya.type;
+           }
        }
        
        formData.items.push(itemData);
