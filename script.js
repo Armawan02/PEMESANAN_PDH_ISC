@@ -341,35 +341,41 @@ document.getElementById('form-pesanan').addEventListener('submit', async functio
            continue;
        }
        
-       // VALIDASI DIHAPUS SESUAI PERMINTAAN (Agar tidak ada kendala)
-       // Jika jabatan atau ukuran kosong, tidak akan error merah, tapi akan dikirim apa adanya atau dilewati jika kosong total.
+       // Cek apakah form SAMA SEKALI tidak disentuh (kosong 100%)
+       const isFormUntouched = isJabEmpty && isUkEmpty && isDivEmpty && isFileEmpty;
+
+       if (isHidden || isFormUntouched) {
+           // Aman untuk diabaikan (form kosong total atau disembunyikan)
+           continue;
+       }
+       
+       // JIKA SAMPAI SINI, BERARTI FORM TELAH DIISI SEBAGIAN! Harus divalidasi ketat!
+       if (isJabEmpty) throw new Error(`Jabatan wajib dipilih pada form PDH ${jp}.`);
+       if (isUkEmpty) throw new Error(`Ukuran wajib dipilih pada form PDH ${jp}.`);
        
        const vol = item.querySelector('.volume-input').value;
        
        if (jabInput === 'Pengurus') {
            const posInput = item.querySelector('.posisi-pengurus-input').value;
            if (!posInput || posInput.includes('Pilih')) {
-               // Tetap kirim meski posisi belum dipilih (fallback)
-               jabInput = 'Pengurus (Posisi Kosong)';
-           } else {
-               if (posInput.includes('KADEP')) divInput = '-';
-               else if (posInput.includes('KOORDIV. WEB')) divInput = 'WEB';
-               else if (posInput.includes('KOORDIV. MOBILE')) divInput = 'Mobile';
-               else if (posInput.includes('KOORDIV. IOT')) divInput = 'IoT';
-               else if (posInput.includes('KOORDIV. SC')) divInput = 'SC';
-               else if (posInput.includes('KOORDIV. UI UX')) divInput = 'UI UX';
-               else divInput = '-'; 
-               jabInput = posInput;
+               throw new Error(`Posisi pengurus wajib dipilih pada form PDH ${jp}.`);
            }
-           jp = '-';
+           
+           if (posInput.includes('KADEP')) divInput = '-';
+           else if (posInput.includes('KOORDIV. WEB')) divInput = 'WEB';
+           else if (posInput.includes('KOORDIV. MOBILE')) divInput = 'Mobile';
+           else if (posInput.includes('KOORDIV. IOT')) divInput = 'IoT';
+           else if (posInput.includes('KOORDIV. SC')) divInput = 'SC';
+           else if (posInput.includes('KOORDIV. UI UX')) divInput = 'UI UX';
+           else divInput = '-'; 
+           
+           jabInput = posInput;
        } else if (jabInput === 'Pembina') {
-           jp = '-';
            divInput = '-';
        } else if (jabInput === 'Pembimbing') {
-           jp = '-';
-           if (!divInput || divInput.includes('Pilih')) divInput = 'Tidak Diisi';
+           if (isDivEmpty) throw new Error(`Divisi wajib dipilih untuk Pembimbing pada form PDH ${jp}.`);
        } else {
-           if (!divInput || divInput.includes('Pilih')) divInput = 'Tidak Diisi';
+           if (isDivEmpty) throw new Error(`Divisi wajib dipilih untuk Anggota pada form PDH ${jp}.`);
        }
        
        let itemData = {
@@ -381,14 +387,12 @@ document.getElementById('form-pesanan').addEventListener('submit', async functio
        };
        
        if (jp === 'Exclusive') {
-           // Jika tidak upload dokumen, izinkan saja berlalu
-           if (fileKarya) {
-               if (fileKarya.size > 5 * 1024 * 1024) throw new Error("Ukuran file dokumen terlalu besar. Maksimal 5MB.");
-               
-               itemData.karyaBase64 = await getBase64(fileKarya);
-               itemData.karyaFileName = fileKarya.name;
-               itemData.karyaMimeType = fileKarya.type;
-           }
+           if (!fileKarya) throw new Error(`Dokumen Pendukung wajib diunggah untuk PDH ${jp}.`);
+           if (fileKarya.size > 5 * 1024 * 1024) throw new Error("Ukuran file dokumen terlalu besar. Maksimal 5MB.");
+           
+           itemData.karyaBase64 = await getBase64(fileKarya);
+           itemData.karyaFileName = fileKarya.name;
+           itemData.karyaMimeType = fileKarya.type;
        }
        
        formData.items.push(itemData);
