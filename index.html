@@ -33,9 +33,15 @@
           <li><span class="check">✓</span> Bordir: <strong style="opacity: 0.7;">Bordir Datar (Standard)</strong></li>
         </ul>
         <div class="price-box">
-          <div class="price-item" style="justify-content: center;">
-            <span style="font-size: 16px; margin-right: 15px;">Harga Satuan</span>
-            <strong class="price-amount" style="font-size: 20px;">Rp 155.000</strong>
+          <div class="price-item" style="display: flex; flex-direction: column; align-items: center; gap: 10px; width: 100%;">
+            <div style="display: flex; justify-content: space-between; width: 100%; border-bottom: 1px dashed rgba(255,255,255,0.1); padding-bottom: 5px;">
+              <span style="font-size: 15px;">Size S, M, L</span>
+              <strong class="price-amount" style="font-size: 16px; color: #4da6ff;">Rp 155.000</strong>
+            </div>
+            <div style="display: flex; justify-content: space-between; width: 100%;">
+              <span style="font-size: 15px;">Size XL, XXL</span>
+              <strong class="price-amount" style="font-size: 16px; color: #4da6ff;">Rp 160.000</strong>
+            </div>
           </div>
         </div>
         <div class="payment-info">
@@ -105,15 +111,21 @@
           </div>
         </div>
 
-
-        <div id="pesanan-container">
-          <div class="pesanan-item" style="border: 1px solid rgba(255,255,255,0.1); padding: 15px; border-radius: 8px; margin-bottom: 15px; background: rgba(0,0,0,0.1);">
-            <h4 class="pesanan-label" style="margin-top: 0; margin-bottom: 15px; color: #3b82f6; font-size: 16px; font-weight: 600; border-bottom: 1px dashed rgba(59, 130, 246, 0.3); padding-bottom: 10px;">Order 1</h4>
+        <div id="pesanan-standard-container">
+          <div class="pesanan-item standard" style="display: none; border: 1px solid rgba(255,255,255,0.1); padding: 15px; border-radius: 8px; margin-bottom: 15px; background: rgba(0,0,0,0.1);">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; border-bottom: 1px dashed rgba(59, 130, 246, 0.3); padding-bottom: 10px;">
+              <div>
+                <h4 class="pesanan-label" style="margin: 0; color: #3b82f6; font-size: 16px; font-weight: 600; display: inline-block;">PDH Standard</h4>
+                <span style="font-size: 13px; color: #ff4d4d; font-weight: bold; background: rgba(255, 77, 77, 0.1); padding: 2px 6px; border-radius: 4px; margin-left: 8px;">(*Abaikan atau hapus form ini jika tidak dipesan)</span>
+              </div>
+              <button type="button" class="btn-hapus-pesanan" style="background: rgba(239, 68, 68, 0.1); color: #ef4444; border: 1px dashed rgba(239, 68, 68, 0.5); padding: 4px 10px; border-radius: 6px; font-size: 12px; cursor: pointer;">Hapus</button>
+            </div>
+            <input type="hidden" class="jenisPdh-input" value="Standard">
             <div class="form-row">
               <div class="form-group">
                 <label>Jabatan</label>
                 <div class="select-wrapper">
-                  <select class="jabatan-input" required>
+                  <select class="jabatan-input">
                     <option value="" disabled selected>Pilih Jabatan...</option>
                     <option value="Pembina">Pembina</option>
                     <option value="Pembimbing">Pembimbing</option>
@@ -140,35 +152,10 @@
                   </select>
                 </div>
               </div>
-              <div class="form-group">
-                <label>Jenis PDH</label>
-                <div class="select-wrapper">
-                  <select class="jenisPdh-input" required>
-                    <option value="" disabled selected>Pilih Jenis PDH...</option>
-                    <option value="Standard">Standard</option>
-                    <option value="Exclusive">Exclusive</option>
-                  </select>
-                </div>
-              </div>
-              <div class="form-group">
-                <label>Ukuran</label>
-                <div class="select-wrapper">
-                  <select class="ukuran-input" required>
-                    <option value="" disabled selected>Pilih Ukuran...</option>
-                    <option value="S">S</option>
-                    <option value="M">M</option>
-                    <option value="L">L</option>
-                    <option value="XL">XL</option>
-                    <option value="XXL">XXL</option>
-                  </select>
-                </div>
-              </div>
-            </div>
-            <div class="form-row">
-              <div class="form-group">
+              <div class="form-group divisi-group">
                 <label>Divisi</label>
                 <div class="select-wrapper">
-                  <select class="divisi-input" required>
+                  <select class="divisi-input">
                     <option value="" disabled selected>Pilih Divisi...</option>
                     <option value="WEB">WEB</option>
                     <option value="Mobile">Mobile</option>
@@ -178,24 +165,126 @@
                   </select>
                 </div>
               </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label>Ukuran</label>
+                <div class="select-wrapper">
+                  <select class="ukuran-input">
+                    <option value="" disabled selected>Pilih Ukuran...</option>
+                    <option value="S">S</option>
+                    <option value="M">M</option>
+                    <option value="L">L</option>
+                    <option value="XL">XL</option>
+                    <option value="XXL">XXL</option>
+                  </select>
+                </div>
+              </div>
               <div class="form-group">
                 <label>Volume (Jumlah)</label>
-                <input type="number" class="volume-input" min="1" value="1" required>
+                <input type="number" class="volume-input" min="1" value="1">
               </div>
             </div>
-            <div class="form-group karya-group-local" style="display: none; background: rgba(16, 185, 129, 0.1); padding: 15px; border-radius: 12px; border: 1px dashed rgba(16, 185, 129, 0.3); margin-top: 15px; margin-bottom: 0;">
+          </div>
+          <button type="button" id="btn-kembalikan-standard" style="display: block; background: rgba(59, 130, 246, 0.1); color: #3b82f6; border: 1px dashed rgba(59, 130, 246, 0.5); width: 100%; padding: 12px; border-radius: 8px; margin-bottom: 15px; font-weight: bold; cursor: pointer; transition: all 0.3s ease;">
+            + Tampilkan Form PDH Standard
+          </button>
+        </div>
+
+        <div id="pesanan-exclusive-container">
+          <div class="pesanan-item exclusive" style="display: none; border: 1px solid rgba(255,255,255,0.1); padding: 15px; border-radius: 8px; margin-bottom: 15px; background: rgba(0,0,0,0.1);">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; border-bottom: 1px dashed rgba(16, 185, 129, 0.3); padding-bottom: 10px;">
+              <div>
+                <h4 class="pesanan-label" style="margin: 0; color: #10b981; font-size: 16px; font-weight: 600; display: inline-block;">PDH Exclusive</h4>
+                <span style="font-size: 13px; color: #ff4d4d; font-weight: bold; background: rgba(255, 77, 77, 0.1); padding: 2px 6px; border-radius: 4px; margin-left: 8px;">(*Abaikan atau hapus form ini jika tidak dipesan)</span>
+              </div>
+              <button type="button" class="btn-hapus-pesanan" style="background: rgba(239, 68, 68, 0.1); color: #ef4444; border: 1px dashed rgba(239, 68, 68, 0.5); padding: 4px 10px; border-radius: 6px; font-size: 12px; cursor: pointer;">Hapus</button>
+            </div>
+            <input type="hidden" class="jenisPdh-input" value="Exclusive">
+            <div class="form-row">
+              <div class="form-group">
+                <label>Jabatan</label>
+                <div class="select-wrapper">
+                  <select class="jabatan-input">
+                    <option value="" disabled selected>Pilih Jabatan...</option>
+                    <option value="Pembina">Pembina</option>
+                    <option value="Pembimbing">Pembimbing</option>
+                    <option value="Pengurus">Pengurus</option>
+                    <option value="Anggota">Anggota</option>
+                  </select>
+                </div>
+                <div class="pengurus-group-local select-wrapper" style="display: none; margin-top: 10px;">
+                  <select class="posisi-pengurus-input">
+                    <option value="" disabled selected>Pilih Posisi Pengurus...</option>
+                    <option value="KETUA UMUM">KETUA UMUM</option>
+                    <option value="WAKIL KETUA UMUM">WAKIL KETUA UMUM</option>
+                    <option value="SEKRETARIS UMUM">SEKRETARIS UMUM</option>
+                    <option value="BENDAHARA UMUM">BENDAHARA UMUM</option>
+                    <option value="KADEP. LEARNING & DEVELOPMENT">KADEP. LEARNING & DEVELOPMENT</option>
+                    <option value="KADEP. RESEARCH & COMPETITION">KADEP. RESEARCH & COMPETITION</option>
+                    <option value="KADEP. CREATIVE MEDIA">KADEP. CREATIVE MEDIA</option>
+                    <option value="KADEP. MARKETING">KADEP. MARKETING</option>
+                    <option value="KOORDIV. WEB">KOORDIV. WEB</option>
+                    <option value="KOORDIV. MOBILE">KOORDIV. MOBILE</option>
+                    <option value="KOORDIV. SC">KOORDIV. SC</option>
+                    <option value="KOORDIV. IOT">KOORDIV. IOT</option>
+                    <option value="KOORDIV. UI UX">KOORDIV. UI UX</option>
+                  </select>
+                </div>
+              </div>
+              <div class="form-group divisi-group">
+                <label>Divisi</label>
+                <div class="select-wrapper">
+                  <select class="divisi-input">
+                    <option value="" disabled selected>Pilih Divisi...</option>
+                    <option value="WEB">WEB</option>
+                    <option value="Mobile">Mobile</option>
+                    <option value="IoT">IoT</option>
+                    <option value="SC">SC</option>
+                    <option value="UI UX">UI UX</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label>Ukuran</label>
+                <div class="select-wrapper">
+                  <select class="ukuran-input">
+                    <option value="" disabled selected>Pilih Ukuran...</option>
+                    <option value="S">S</option>
+                    <option value="M">M</option>
+                    <option value="L">L</option>
+                    <option value="XL">XL</option>
+                    <option value="XXL">XXL</option>
+                  </select>
+                </div>
+              </div>
+              <div class="form-group">
+                <label>Volume (Jumlah)</label>
+                <input type="number" class="volume-input" min="1" value="1">
+              </div>
+            </div>
+            <div class="form-group karya-group-local" style="background: rgba(16, 185, 129, 0.1); padding: 15px; border-radius: 12px; border: 1px dashed rgba(16, 185, 129, 0.3); margin-top: 15px; margin-bottom: 0;">
               <label style="color: #10b981;">Unggah Dokumen Pendukung (Khusus Exclusive)</label>
-              <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 10px;">Untuk tipe Exclusive, mohon unggah dokumen pendukung (Sertifikat Prestasi, SK Asdos, Karya, dll) sebagai bahan validasi admin.</p>
+              <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 10px;">Mohon unggah dokumen pendukung (Sertifikat Prestasi, SK Asdos, Karya, dll) sebagai bahan validasi admin.</p>
               <div class="file-upload">
                 <input type="file" class="fileKarya-local" accept="image/*,application/pdf">
               </div>
             </div>
           </div>
+          <button type="button" id="btn-kembalikan-exclusive" style="display: block; background: rgba(16, 185, 129, 0.1); color: #10b981; border: 1px dashed rgba(16, 185, 129, 0.5); width: 100%; padding: 12px; border-radius: 8px; margin-bottom: 15px; font-weight: bold; cursor: pointer; transition: all 0.3s ease;">
+            + Tampilkan Form PDH Exclusive
+          </button>
         </div>
 
-        <button type="button" id="btn-tambah-pesanan" style="background: rgba(59, 130, 246, 0.1); color: #3b82f6; border: 1px dashed rgba(59, 130, 246, 0.5); width: 100%; padding: 12px; border-radius: 8px; margin-bottom: 20px; font-weight: bold; cursor: pointer; transition: all 0.3s ease;">
-          + Tambah Pesanan
-        </button>
+        <div class="form-group" style="background: rgba(77, 166, 255, 0.1); padding: 15px; border-radius: 12px; border: 1px dashed rgba(77, 166, 255, 0.3); margin-bottom: 25px;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+            <span style="font-size: 16px; font-weight: 500;">Grand Total (Yang harus di TF):</span>
+            <strong id="grand-total-display" style="font-size: 24px; color: #4da6ff;">Rp 0</strong>
+          </div>
+          <p style="font-size: 12px; color: var(--text-muted); margin: 0;">Otomatis dihitung berdasarkan jenis ukuran dan jumlah pesanan yang diisi. DP minimal Rp 80.000/baju.</p>
+        </div>
 
         <div class="form-group">
           <label for="buktiTrans">Bukti Transfer (Gambar / PDF)</label>

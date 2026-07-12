@@ -1,7 +1,7 @@
 // Konstanta ID Spreadsheet untuk menyimpan data pesanan
 const SPREADSHEET_ID = '1DdqKFPHXEXbDngJJ6L969bMYIiYag0O41p_cy0i6pNA';
-const ADMIN_PASSWORD = 'admin'; // Password default, bisa diganti
-const ADMIN_EMAIL = 'emailanda@gmail.com'; // TODO: GANTI DENGAN EMAIL ANDA
+const ADMIN_PASSWORD = '@isc2026'; 
+const ADMIN_EMAIL = 'armawanome47@gmail.com'; 
 
 /**
  * FUNGSI KHUSUS UNTUK MEMANCING IZIN (AUTHORIZATION)

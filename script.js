@@ -14,23 +14,6 @@ function getBase64(file) {
   });
 }
 
-function checkExclusive() {
-    const items = document.querySelectorAll('.pesanan-item');
-    items.forEach(item => {
-        const select = item.querySelector('.jenisPdh-input');
-        const karyaGroup = item.querySelector('.karya-group-local');
-        const fileKarya = item.querySelector('.fileKarya-local');
-        
-        if (select.value === 'Exclusive') {
-            karyaGroup.style.display = 'block';
-            fileKarya.required = true;
-        } else {
-            karyaGroup.style.display = 'none';
-            fileKarya.required = false;
-        }
-    });
-}
-
 function checkPengurus() {
     const items = document.querySelectorAll('.pesanan-item');
     items.forEach(item => {
@@ -39,113 +22,274 @@ function checkPengurus() {
         const pengurusGroup = item.querySelector('.pengurus-group-local');
         const pengurusInput = item.querySelector('.posisi-pengurus-input');
         
-        const jenisPdhGroup = item.querySelector('.jenisPdh-input').closest('.form-group');
-        const jenisPdhInput = item.querySelector('.jenisPdh-input');
-        
-        const divisiGroup = item.querySelector('.divisi-input').closest('.form-group');
+        const divisiGroup = item.querySelector('.divisi-group');
         const divisiInput = item.querySelector('.divisi-input');
+        const jenisPdhInput = item.querySelector('.jenisPdh-input');
         
         pengurusGroup.style.display = 'none';
         pengurusInput.required = false;
-        jenisPdhGroup.style.display = 'block';
-        jenisPdhInput.required = true;
         divisiGroup.style.display = 'block';
         divisiInput.required = true;
         
         if (jabatan === 'Pengurus') {
             pengurusGroup.style.display = 'block';
             pengurusInput.required = true;
-            jenisPdhGroup.style.display = 'none';
-            jenisPdhInput.required = false;
-            jenisPdhInput.value = '';
+            jenisPdhInput.value = '-';
             divisiGroup.style.display = 'none';
             divisiInput.required = false;
             divisiInput.value = '';
         } else if (jabatan === 'Pembina') {
-            jenisPdhGroup.style.display = 'none';
-            jenisPdhInput.required = false;
-            jenisPdhInput.value = '';
+            jenisPdhInput.value = '-';
             divisiGroup.style.display = 'none';
             divisiInput.required = false;
             divisiInput.value = '';
         } else if (jabatan === 'Pembimbing') {
-            jenisPdhGroup.style.display = 'none';
-            jenisPdhInput.required = false;
-            jenisPdhInput.value = '';
+            jenisPdhInput.value = '-';
+        } else {
+            // Restore proper jenisPdh value if changed back to Anggota
+            if (item.classList.contains('exclusive')) {
+                jenisPdhInput.value = 'Exclusive';
+            } else {
+                jenisPdhInput.value = 'Standard';
+            }
         }
     });
-    
-    checkExclusive();
 }
 
-document.getElementById('pesanan-container').addEventListener('change', function(e) {
-    if (e.target.classList.contains('jenisPdh-input')) {
-        checkExclusive();
-    }
+document.getElementById('form-pesanan').addEventListener('change', function(e) {
     if (e.target.classList.contains('jabatan-input')) {
         checkPengurus();
     }
 });
 function updatePesananLabels() {
-    const items = document.querySelectorAll('.pesanan-item');
-    items.forEach((item, index) => {
+    const stdItems = document.querySelectorAll('.pesanan-item.standard');
+    stdItems.forEach((item, index) => {
         const label = item.querySelector('.pesanan-label');
         if (label) {
-            label.textContent = `Order ${index + 1}`;
+            label.textContent = `PDH Standard ${index + 1}`;
+        }
+    });
+    
+    const excItems = document.querySelectorAll('.pesanan-item.exclusive');
+    excItems.forEach((item, index) => {
+        const label = item.querySelector('.pesanan-label');
+        if (label) {
+            label.textContent = `PDH Exclusive ${index + 1}`;
         }
     });
 }
 
-document.getElementById('btn-tambah-pesanan').addEventListener('click', function() {
-    const container = document.getElementById('pesanan-container');
-    const firstItem = container.querySelector('.pesanan-item');
-    const newItem = firstItem.cloneNode(true);
-    
-    // Reset values
-    newItem.querySelector('.jenisPdh-input').value = '';
-    newItem.querySelector('.ukuran-input').value = '';
-    newItem.querySelector('.divisi-input').value = '';
-    newItem.querySelector('.jabatan-input').value = '';
-    newItem.querySelector('.pengurus-group-local').style.display = 'none';
-    newItem.querySelector('.posisi-pengurus-input').value = '';
-    newItem.querySelector('.posisi-pengurus-input').required = false;
-    newItem.querySelector('.volume-input').value = '1';
-    
-    newItem.querySelector('.jenisPdh-input').closest('.form-group').style.display = 'block';
-    newItem.querySelector('.jenisPdh-input').required = true;
-    newItem.querySelector('.divisi-input').closest('.form-group').style.display = 'block';
-    newItem.querySelector('.divisi-input').required = true;
-    
-    newItem.querySelector('.karya-group-local').style.display = 'none';
-    newItem.querySelector('.fileKarya-local').value = '';
-    newItem.querySelector('.fileKarya-local').required = false;
-    
-    // Add delete button
-    if (!newItem.querySelector('.btn-hapus-pesanan')) {
-        const delBtn = document.createElement('button');
-        delBtn.type = 'button';
-        delBtn.className = 'btn-hapus-pesanan';
-        delBtn.style.cssText = 'background: rgba(239, 68, 68, 0.1); color: #ef4444; border: 1px dashed rgba(239, 68, 68, 0.5); width: 100%; padding: 8px; border-radius: 8px; margin-top: 10px; cursor: pointer; transition: all 0.3s ease;';
-        delBtn.textContent = 'Hapus Pesanan Ini';
-        delBtn.onclick = function() {
-            newItem.remove();
-            checkExclusive();
+function createPesananItem(type) {
+    const templateStandard = `
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; border-bottom: 1px dashed rgba(59, 130, 246, 0.3); padding-bottom: 10px;">
+          <h4 class="pesanan-label" style="margin: 0; color: #3b82f6; font-size: 16px; font-weight: 600;">PDH Standard</h4>
+          <button type="button" class="btn-hapus-pesanan" style="background: rgba(239, 68, 68, 0.1); color: #ef4444; border: 1px dashed rgba(239, 68, 68, 0.5); padding: 4px 10px; border-radius: 6px; font-size: 12px; cursor: pointer;">Hapus</button>
+        </div>
+        <input type="hidden" class="jenisPdh-input" value="Standard">
+        <div class="form-row">
+          <div class="form-group">
+            <label>Jabatan</label>
+            <div class="select-wrapper">
+              <select class="jabatan-input" required>
+                <option value="" disabled selected>Pilih Jabatan...</option>
+                <option value="Pembina">Pembina</option>
+                <option value="Pembimbing">Pembimbing</option>
+                <option value="Pengurus">Pengurus</option>
+                <option value="Anggota">Anggota</option>
+              </select>
+            </div>
+            <div class="pengurus-group-local select-wrapper" style="display: none; margin-top: 10px;">
+              <select class="posisi-pengurus-input">
+                <option value="" disabled selected>Pilih Posisi Pengurus...</option>
+                <option value="KETUA UMUM">KETUA UMUM</option>
+                <option value="WAKIL KETUA UMUM">WAKIL KETUA UMUM</option>
+                <option value="SEKRETARIS UMUM">SEKRETARIS UMUM</option>
+                <option value="BENDAHARA UMUM">BENDAHARA UMUM</option>
+                <option value="KADEP. LEARNING & DEVELOPMENT">KADEP. LEARNING & DEVELOPMENT</option>
+                <option value="KADEP. RESEARCH & COMPETITION">KADEP. RESEARCH & COMPETITION</option>
+                <option value="KADEP. CREATIVE MEDIA">KADEP. CREATIVE MEDIA</option>
+                <option value="KADEP. MARKETING">KADEP. MARKETING</option>
+                <option value="KOORDIV. WEB">KOORDIV. WEB</option>
+                <option value="KOORDIV. MOBILE">KOORDIV. MOBILE</option>
+                <option value="KOORDIV. SC">KOORDIV. SC</option>
+                <option value="KOORDIV. IOT">KOORDIV. IOT</option>
+                <option value="KOORDIV. UI UX">KOORDIV. UI UX</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-group divisi-group">
+            <label>Divisi</label>
+            <div class="select-wrapper">
+              <select class="divisi-input" required>
+                <option value="" disabled selected>Pilih Divisi...</option>
+                <option value="WEB">WEB</option>
+                <option value="Mobile">Mobile</option>
+                <option value="IoT">IoT</option>
+                <option value="SC">SC</option>
+                <option value="UI UX">UI UX</option>
+              </select>
+            </div>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Ukuran</label>
+            <div class="select-wrapper">
+              <select class="ukuran-input" required>
+                <option value="" disabled selected>Pilih Ukuran...</option>
+                <option value="S">S</option>
+                <option value="M">M</option>
+                <option value="L">L</option>
+                <option value="XL">XL</option>
+                <option value="XXL">XXL</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Volume (Jumlah)</label>
+            <input type="number" class="volume-input" min="1" value="1" required>
+          </div>
+        </div>
+    `;
+
+    const templateExclusive = `
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; border-bottom: 1px dashed rgba(16, 185, 129, 0.3); padding-bottom: 10px;">
+          <h4 class="pesanan-label" style="margin: 0; color: #10b981; font-size: 16px; font-weight: 600;">PDH Exclusive</h4>
+          <button type="button" class="btn-hapus-pesanan" style="background: rgba(239, 68, 68, 0.1); color: #ef4444; border: 1px dashed rgba(239, 68, 68, 0.5); padding: 4px 10px; border-radius: 6px; font-size: 12px; cursor: pointer;">Hapus</button>
+        </div>
+        <input type="hidden" class="jenisPdh-input" value="Exclusive">
+        <div class="form-row">
+          <div class="form-group">
+            <label>Jabatan</label>
+            <div class="select-wrapper">
+              <select class="jabatan-input" required>
+                <option value="" disabled selected>Pilih Jabatan...</option>
+                <option value="Pembina">Pembina</option>
+                <option value="Pembimbing">Pembimbing</option>
+                <option value="Pengurus">Pengurus</option>
+                <option value="Anggota">Anggota</option>
+              </select>
+            </div>
+            <div class="pengurus-group-local select-wrapper" style="display: none; margin-top: 10px;">
+              <select class="posisi-pengurus-input">
+                <option value="" disabled selected>Pilih Posisi Pengurus...</option>
+                <option value="KETUA UMUM">KETUA UMUM</option>
+                <option value="WAKIL KETUA UMUM">WAKIL KETUA UMUM</option>
+                <option value="SEKRETARIS UMUM">SEKRETARIS UMUM</option>
+                <option value="BENDAHARA UMUM">BENDAHARA UMUM</option>
+                <option value="KADEP. LEARNING & DEVELOPMENT">KADEP. LEARNING & DEVELOPMENT</option>
+                <option value="KADEP. RESEARCH & COMPETITION">KADEP. RESEARCH & COMPETITION</option>
+                <option value="KADEP. CREATIVE MEDIA">KADEP. CREATIVE MEDIA</option>
+                <option value="KADEP. MARKETING">KADEP. MARKETING</option>
+                <option value="KOORDIV. WEB">KOORDIV. WEB</option>
+                <option value="KOORDIV. MOBILE">KOORDIV. MOBILE</option>
+                <option value="KOORDIV. SC">KOORDIV. SC</option>
+                <option value="KOORDIV. IOT">KOORDIV. IOT</option>
+                <option value="KOORDIV. UI UX">KOORDIV. UI UX</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-group divisi-group">
+            <label>Divisi</label>
+            <div class="select-wrapper">
+              <select class="divisi-input" required>
+                <option value="" disabled selected>Pilih Divisi...</option>
+                <option value="WEB">WEB</option>
+                <option value="Mobile">Mobile</option>
+                <option value="IoT">IoT</option>
+                <option value="SC">SC</option>
+                <option value="UI UX">UI UX</option>
+              </select>
+            </div>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Ukuran</label>
+            <div class="select-wrapper">
+              <select class="ukuran-input" required>
+                <option value="" disabled selected>Pilih Ukuran...</option>
+                <option value="S">S</option>
+                <option value="M">M</option>
+                <option value="L">L</option>
+                <option value="XL">XL</option>
+                <option value="XXL">XXL</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Volume (Jumlah)</label>
+            <input type="number" class="volume-input" min="1" value="1" required>
+          </div>
+        </div>
+        <div class="form-group karya-group-local" style="background: rgba(16, 185, 129, 0.1); padding: 15px; border-radius: 12px; border: 1px dashed rgba(16, 185, 129, 0.3); margin-top: 15px; margin-bottom: 0;">
+          <label style="color: #10b981;">Unggah Dokumen Pendukung (Khusus Exclusive)</label>
+          <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 10px;">Mohon unggah dokumen pendukung (Sertifikat Prestasi, SK Asdos, Karya, dll) sebagai bahan validasi admin.</p>
+          <div class="file-upload">
+            <input type="file" class="fileKarya-local" accept="image/*,application/pdf" required>
+          </div>
+        </div>
+    `;
+
+    const div = document.createElement('div');
+    div.className = `pesanan-item ${type}`;
+    div.style.cssText = 'border: 1px solid rgba(255,255,255,0.1); padding: 15px; border-radius: 8px; margin-bottom: 15px; background: rgba(0,0,0,0.1);';
+    div.innerHTML = type === 'standard' ? templateStandard : templateExclusive;
+
+    return div;
+}
+
+
+
+document.addEventListener('click', function(e) {
+    if (e.target && e.target.classList.contains('btn-hapus-pesanan')) {
+        const item = e.target.closest('.pesanan-item');
+        if (item) {
+            item.style.display = 'none';
+            
+            // Bersihkan input
+            const inputs = item.querySelectorAll('input, select');
+            inputs.forEach(input => {
+                if (input.classList.contains('volume-input')) {
+                    input.value = 1;
+                } else if (input.classList.contains('jenisPdh-input')) {
+                    // skip
+                } else {
+                    input.value = '';
+                }
+            });
+            
+            if (item.classList.contains('standard')) {
+                document.getElementById('btn-kembalikan-standard').style.display = 'block';
+            } else if (item.classList.contains('exclusive')) {
+                document.getElementById('btn-kembalikan-exclusive').style.display = 'block';
+            }
+
             checkPengurus();
             updatePesananLabels();
-        };
-        newItem.appendChild(delBtn);
-    } else {
-        newItem.querySelector('.btn-hapus-pesanan').onclick = function() {
-            newItem.remove();
-            checkExclusive();
-            checkPengurus();
-            updatePesananLabels();
-        };
+        }
     }
-    
-    container.appendChild(newItem);
-    updatePesananLabels();
 });
+
+const btnKembaliStandard = document.getElementById('btn-kembalikan-standard');
+if (btnKembaliStandard) {
+    btnKembaliStandard.addEventListener('click', function() {
+        const item = document.querySelector('.pesanan-item.standard');
+        if (item) item.style.display = 'block';
+        this.style.display = 'none';
+        calculateGrandTotal();
+    });
+}
+
+const btnKembaliExclusive = document.getElementById('btn-kembalikan-exclusive');
+if (btnKembaliExclusive) {
+    btnKembaliExclusive.addEventListener('click', function() {
+        const item = document.querySelector('.pesanan-item.exclusive');
+        if (item) item.style.display = 'block';
+        this.style.display = 'none';
+        calculateGrandTotal();
+    });
+}
 
 document.getElementById('form-pesanan').addEventListener('submit', async function(event) {
   event.preventDefault();
@@ -182,17 +326,42 @@ document.getElementById('form-pesanan').addEventListener('submit', async functio
       mimeType: file.type
     };
 
-    const pesananItems = document.querySelectorAll('.pesanan-item');
-    for (let item of pesananItems) {
+    const allItems = document.querySelectorAll('.pesanan-item');
+    
+    for (let item of allItems) {
        let jp = item.querySelector('.jenisPdh-input').value;
        const uk = item.querySelector('.ukuran-input').value;
        let divInput = item.querySelector('.divisi-input').value;
        let jabInput = item.querySelector('.jabatan-input').value;
+       
+       const isJabEmpty = (!jabInput || jabInput === '' || jabInput.includes('Pilih'));
+       const isUkEmpty = (!uk || uk === '' || uk.includes('Pilih'));
+       const isDivEmpty = (!divInput || divInput === '' || divInput.includes('Pilih'));
+       const isHidden = item.style.display === 'none' || item.offsetParent === null;
+
+       let fileKarya = null;
+       let isFileEmpty = true;
+       if (jp === 'Exclusive') {
+           fileKarya = item.querySelector('.fileKarya-local').files[0];
+           if (fileKarya) isFileEmpty = false;
+       }
+
+       // Jika form disembunyikan ATAU benar-benar kosong SEMUANYA, abaikan saja
+       if (isHidden || (isJabEmpty && isUkEmpty && isDivEmpty && isFileEmpty)) {
+           continue;
+       }
+       
+       // VALIDASI: Peringatan jika form diisi setengah-setengah
+       if (isJabEmpty) throw new Error("Jabatan wajib dipilih untuk setiap pesanan yang diisi.");
+       if (isUkEmpty) throw new Error("Ukuran wajib dipilih untuk setiap pesanan yang diisi.");
+       
        const vol = item.querySelector('.volume-input').value;
        
        if (jabInput === 'Pengurus') {
            const posInput = item.querySelector('.posisi-pengurus-input').value;
-           if (!posInput) throw new Error("Posisi pengurus wajib dipilih jika jabatan adalah Pengurus.");
+           if (!posInput || posInput.includes('Pilih')) {
+               throw new Error("Posisi pengurus wajib dipilih jika jabatan adalah Pengurus.");
+           }
            
            if (posInput.includes('KADEP')) divInput = '-';
            else if (posInput.includes('KOORDIV. WEB')) divInput = 'WEB';
@@ -209,14 +378,11 @@ document.getElementById('form-pesanan').addEventListener('submit', async functio
            divInput = '-';
        } else if (jabInput === 'Pembimbing') {
            jp = '-';
-           if (!divInput) throw new Error("Divisi wajib dipilih untuk setiap pesanan.");
+           if (!divInput) throw new Error("Divisi wajib dipilih untuk setiap pesanan yang diisi.");
        } else {
-           if (!divInput) throw new Error("Divisi wajib dipilih untuk setiap pesanan.");
-           if (!jp) throw new Error("Jenis PDH wajib dipilih untuk setiap pesanan.");
+           if (!divInput) throw new Error("Divisi wajib dipilih untuk setiap pesanan yang diisi.");
        }
        
-       if (!jabInput) throw new Error("Jabatan wajib dipilih untuk setiap pesanan.");
-
        let itemData = {
            jenisPdh: jp,
            ukuran: uk,
@@ -226,9 +392,6 @@ document.getElementById('form-pesanan').addEventListener('submit', async functio
        };
        
        if (jp === 'Exclusive') {
-
-           const karyaInput = item.querySelector('.fileKarya-local');
-           const fileKarya = karyaInput.files[0];
            if (!fileKarya) throw new Error("Dokumen Pendukung wajib diunggah untuk tipe Exclusive.");
            if (fileKarya.size > 5 * 1024 * 1024) throw new Error("Ukuran file dokumen terlalu besar. Maksimal 5MB.");
            
@@ -238,6 +401,10 @@ document.getElementById('form-pesanan').addEventListener('submit', async functio
        }
        
        formData.items.push(itemData);
+    }
+    
+    if (formData.items.length === 0) {
+        throw new Error("Mohon isi setidaknya satu pesanan (Standard atau Exclusive).");
     }
     
     const response = await fetch(GAS_API_URL, {
@@ -1112,3 +1279,61 @@ window.salinRekening = function(btn) {
         alert('Gagal menyalin nomor rekening!');
     });
 };
+
+// Fungsi perhitungan Grand Total
+function calculateGrandTotal() {
+    const allItems = document.querySelectorAll('.pesanan-item');
+    let total = 0;
+
+    for (let item of allItems) {
+        // Cek apakah diabaikan
+        const uk = item.querySelector('.ukuran-input').value;
+        const divInput = item.querySelector('.divisi-input').value;
+        const jabInput = item.querySelector('.jabatan-input').value;
+        let jp = item.querySelector('.jenisPdh-input').value;
+        let fileKarya = null;
+        let isFileEmpty = true;
+        if (jp === 'Exclusive') {
+           const fileInput = item.querySelector('.fileKarya-local');
+           fileKarya = fileInput ? fileInput.files[0] : null;
+           if (fileKarya) isFileEmpty = false;
+        }
+
+        const isJabEmpty = (!jabInput || jabInput === '' || jabInput.includes('Pilih'));
+        const isUkEmpty = (!uk || uk === '' || uk.includes('Pilih'));
+        const isDivEmpty = (!divInput || divInput === '' || divInput.includes('Pilih'));
+        const isHidden = item.style.display === 'none' || item.offsetParent === null;
+
+        // Jika form disembunyikan ATAU benar-benar kosong SEMUANYA, abaikan dari total
+        if (isHidden || (isJabEmpty && isUkEmpty && isDivEmpty && isFileEmpty)) {
+            continue;
+        }
+
+        let volStr = item.querySelector('.volume-input').value;
+        let vol = parseInt(volStr);
+        if (isNaN(vol) || vol < 1) vol = 1;
+        
+        let price = 155000; // default S, M, L atau belum milih
+        if (uk === 'XL' || uk === 'XXL') {
+            price = 160000;
+        }
+
+        total += (price * vol);
+    }
+
+    const display = document.getElementById('grand-total-display');
+    if (display) {
+        display.textContent = total > 0 ? 'Rp ' + total.toLocaleString('id-ID') : 'Rp 0';
+    }
+}
+
+// Tambahkan event listener agar form otomatis menghitung
+document.getElementById('form-pesanan').addEventListener('change', calculateGrandTotal);
+document.getElementById('form-pesanan').addEventListener('input', calculateGrandTotal);
+document.addEventListener('click', function(e) {
+    if (e.target && e.target.classList.contains('btn-hapus-pesanan')) {
+        setTimeout(calculateGrandTotal, 100);
+    }
+});
+document.addEventListener('DOMContentLoaded', calculateGrandTotal);
+
