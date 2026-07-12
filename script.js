@@ -480,9 +480,26 @@ document.getElementById('form-pesanan').addEventListener('submit', async functio
     
     messageDiv.style.display = 'block';
     if (result.success) {
-      messageDiv.classList.add('success');
-      messageDiv.textContent = result.message;
+      // Tampilkan Modal Popup
+      document.getElementById('success-popup-message').textContent = result.message || "Pesanan Anda telah berhasil dikirim.";
+      document.getElementById('success-popup').style.display = 'flex';
+      
+      messageDiv.style.display = 'none'; // Sembunyikan pesan teks biasa
       document.getElementById('form-pesanan').reset();
+      
+      // Kembalikan form ke tampilan default
+      const resetItems = document.querySelectorAll('.pesanan-item');
+      for (let item of resetItems) {
+          const pengurusGroup = item.querySelector('.pengurus-group-local');
+          const divisiGroup = item.querySelector('.divisi-group');
+          const karyaGroup = item.querySelector('.karya-group-local');
+          if (pengurusGroup) pengurusGroup.style.display = 'none';
+          if (divisiGroup) divisiGroup.style.display = 'block';
+          if (karyaGroup) {
+              if (item.classList.contains('exclusive')) karyaGroup.style.display = 'block';
+          }
+      }
+      setTimeout(calculateGrandTotal, 100);
       loadDataPesanan();
     } else {
       messageDiv.classList.add('error');
