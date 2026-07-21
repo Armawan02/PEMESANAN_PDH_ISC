@@ -1121,7 +1121,7 @@ window.updateStatus = async function(rowId, type, value) {
             headers: { 'Content-Type': 'text/plain;charset=utf-8' },
             body: JSON.stringify({
                 action: 'update_status',
-                password: document.getElementById('admin-password').value,
+                password: currentPassword,
                 rowId: rowId,
                 type: type,
                 value: value
