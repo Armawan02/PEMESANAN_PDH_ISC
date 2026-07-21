@@ -739,6 +739,7 @@ function renderTable(data) {
 
       let vols = String(item.volume).split(',').map(s => parseInt(s.trim()) || 1);
       let jenisPdhs = String(item.jenisPdh).split(',').map(s => s.trim().toLowerCase());
+      let ukurans = String(item.ukuran).split(',').map(s => s.trim().toUpperCase());
       let valids = String(item.validasi || '').split(',').map(s => s.trim().toLowerCase());
       let getVal = (idx) => valids[idx] !== undefined ? valids[idx] : (valids[0] || '');
       
@@ -749,21 +750,23 @@ function renderTable(data) {
       for (let i = 0; i < vols.length; i++) {
           let v = vols[i];
           let typePdh = (jenisPdhs[i] || '');
+          let uk = (ukurans[i] || '');
           let val = getVal(i);
+          let price = (uk === 'XL' || uk === 'XXL' || uk === '2XL') ? 160000 : 155000;
           
           if (typePdh.includes('exclusive')) {
               if (val === 'disetujui' || val === 'lulus') {
-                  let amt = v * 155000;
+                  let amt = v * price;
                   calcNominal += amt;
                   nominalStrs.push(`Rp ${amt.toLocaleString('id-ID')}`);
               } else if (val === 'tidak disetujui' || val === 'ditolak') {
                   nominalStrs.push(`<span style="color:#ef4444; font-size:11px;">Ditolak</span>`);
               } else {
-                  pendingNominal += v * 155000;
+                  pendingNominal += v * price;
                   nominalStrs.push(`<span style="color:#f59e0b; font-size:11px;">Menunggu Validasi</span>`);
               }
           } else {
-              let amt = v * 155000;
+              let amt = v * price;
               calcNominal += amt;
               nominalStrs.push(`Rp ${amt.toLocaleString('id-ID')}`);
           }
@@ -956,6 +959,7 @@ function generatePDF() {
     globalData.forEach((item, index) => {
         let vols = String(item.volume).split(',').map(s => parseInt(s.trim()) || 1);
         let jenis = String(item.jenisPdh).split(',').map(s => s.trim().toLowerCase());
+        let ukurans = String(item.ukuran).split(',').map(s => s.trim().toUpperCase());
         let valids = String(item.validasi || '').split(',').map(s => s.trim().toLowerCase());
         let getVal = (idx) => valids[idx] !== undefined ? valids[idx] : (valids[0] || '');
         
@@ -965,11 +969,13 @@ function generatePDF() {
         for (let i = 0; i < vols.length; i++) {
             let v = vols[i];
             let typePdh = (jenis[i] || '');
+            let uk = (ukurans[i] || '');
             let val = getVal(i);
+            let price = (uk === 'XL' || uk === 'XXL' || uk === '2XL') ? 160000 : 155000;
             
             if (typePdh.includes('exclusive')) {
                 if (val === 'disetujui' || val === 'lulus') {
-                    let amt = v * 155000;
+                    let amt = v * price;
                     calcNominal += amt;
                     nominalStrs.push(`Rp ${amt.toLocaleString('id-ID')}`);
                 } else if (val === 'tidak disetujui' || val === 'ditolak') {
@@ -978,7 +984,7 @@ function generatePDF() {
                     nominalStrs.push(`Menunggu`);
                 }
             } else {
-                let amt = v * 155000;
+                let amt = v * price;
                 calcNominal += amt;
                 nominalStrs.push(`Rp ${amt.toLocaleString('id-ID')}`);
             }
@@ -1044,14 +1050,16 @@ function renderDashboard(data) {
         for (let i = 0; i < vols.length; i++) {
             let v = vols[i];
             let typePdh = (jenisPdhs[i] || '');
+            let uk = (ukurans[i] || '');
             let val = getVal(i);
+            let price = (uk === 'XL' || uk === 'XXL' || uk === '2XL') ? 160000 : 155000;
             
             if (typePdh.includes('exclusive')) {
                 if (val === 'disetujui' || val === 'lulus') {
-                    calcNominal += v * 155000;
+                    calcNominal += v * price;
                 }
             } else {
-                calcNominal += v * 155000;
+                calcNominal += v * price;
             }
         }
         
@@ -1434,3 +1442,21 @@ document.addEventListener('click', function(e) {
 });
 document.addEventListener('DOMContentLoaded', calculateGrandTotal);
 
+// Fungsi Pencarian
+if (document.getElementById('searchInput')) {
+    document.getElementById('searchInput').addEventListener('input', function(e) {
+        const searchTerm = e.target.value.toLowerCase();
+        if (!globalData) return;
+        
+        if (searchTerm === '') {
+            renderTable(globalData);
+        } else {
+            const filteredData = globalData.filter(item => {
+                const namaMatch = (item.nama || '').toLowerCase().includes(searchTerm);
+                const waMatch = (item.noWa || '').toLowerCase().includes(searchTerm);
+                return namaMatch || waMatch;
+            });
+            renderTable(filteredData);
+        }
+    });
+}
