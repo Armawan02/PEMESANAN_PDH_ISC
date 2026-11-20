@@ -752,7 +752,7 @@ function renderTable(data) {
           let typePdh = (jenisPdhs[i] || '');
           let uk = (ukurans[i] || '');
           let val = getVal(i);
-          let price = (uk === 'XL' || uk === 'XXL' || uk === '2XL') ? 160000 : 155000;
+          let price = (uk === 'L' || uk === 'XL' || uk === 'XXL' || uk === '2XL') ? 160000 : 155000;
           
           if (typePdh.includes('exclusive')) {
               if (val === 'disetujui' || val === 'lulus') {
